@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_mainScreen">
+
+    <fragment
+        android:id="@+id/navigation_mainScreen"
+        android:name="com.example.hearthstoneapp.ui.mainscreen.MainScreen"
+        android:label="@string/title_mainscreen"
+        tools:layout="@layout/fragment_main_screen" >
+        <action
+            android:id="@+id/action_navigation_mainScreen_to_cardsFragment"
+            app:destination="@id/cardsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_favorites"
+        android:name="com.example.hearthstoneapp.ui.favorites.FavoritesFragment"
+        android:label="@string/title_favorites"
+        tools:layout="@layout/fragment_favorites" />
+
+    <fragment
+        android:id="@+id/navigation_shops"
+        android:name="com.example.hearthstoneapp.ui.shops.ShopsFragment"
+        android:label="@string/title_shops"
+        tools:layout="@layout/fragment_shops" />
+    <fragment
+        android:id="@+id/cardsFragment"
+        android:name="com.example.hearthstoneapp.ui.cards.CardsFragment"
+        android:label="fragment_cards"
+        tools:layout="@layout/fragment_cards" >
+        <action
+            android:id="@+id/action_cardsFragment_to_navigation_mainScreen2"
+            app:destination="@id/navigation_mainScreen" />
+    </fragment>
+</navigation>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Hearthstone</string>
+    <string name="title_Main">Main</string>
+    <string name="title_Favorites">Favorites</string>
+    <string name="title_Shops">Shops</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_mainscreen">Main</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="title_shops">Shops</string>
+</resources>
