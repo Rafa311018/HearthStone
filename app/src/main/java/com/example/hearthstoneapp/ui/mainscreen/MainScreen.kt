@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.hearthstone.data.network.repo.HearthStoneRepo
 import com.example.hearthstoneapp.R
 import com.example.hearthstoneapp.databinding.FragmentMainScreenBinding
@@ -40,7 +41,10 @@ class MainScreen : Fragment() {
         binding.loadingIV.visibility = View.VISIBLE
 
         viewModel.cardsFound.observe(viewLifecycleOwner, { cards ->
-            Log.d("Cards", "$cards")
+            if (null != cards) {
+                this.findNavController().navigate(MainScreenDirections.actionNavigationMainScreenToCardsFragment())
+                viewModel.searchCardsComplete()
+            }
         })
 
         return binding.root

@@ -34,5 +34,8 @@
         <action
             android:id="@+id/action_cardsFragment_to_navigation_mainScreen2"
             app:destination="@id/navigation_mainScreen" />
+        <argument
+            android:name="listCardResponse"
+            app:argType="com.example.hearthstoneapp.data.network.model.SearchResponse"/>
     </fragment>
 </navigation>

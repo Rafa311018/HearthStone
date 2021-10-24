@@ -23,8 +23,8 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
     private val _cardsFound = MutableLiveData<List<SearchResponse>?>()
     val cardsFound: LiveData<List<SearchResponse>?> = _cardsFound
 
-    private val _search = MutableLiveData<String>()
-    val search: LiveData<String> = _search
+    private val _search = MutableLiveData<String?>()
+    val search: LiveData<String?> = _search
 
 
     fun fetchClassList() {
@@ -74,5 +74,9 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
     fun updateSearch(text: CharSequence) {
         Log.d("Yoshi","$text")
         _search.value = text.toString()
+    }
+
+    fun searchCardsComplete(){
+        _search.value = null
     }
 }
