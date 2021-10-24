@@ -3,14 +3,18 @@ package com.example.hearthstoneapp.ui.mainscreen.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hearthstoneapp.generated.callback.OnClickListener
 
-class ClassesAdapter() : RecyclerView.Adapter<HearthstoneViewHolder>() {
+class ClassesAdapter(private val onClickListener: OnClickListener) : RecyclerView.Adapter<HearthstoneViewHolder>() {
     private var hearthstoneClasses: List<String?>? = listOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HearthstoneViewHolder {
         return HearthstoneViewHolder(LayoutInflater.from(parent.context), parent)
     }
 
     override fun onBindViewHolder(holder: HearthstoneViewHolder, position: Int) {
+        holder.itemView.setOnClickListener{
+            onClickListener.onClick(hearthstoneClasses?.get(position))
+        }
         holder.bind(hearthstoneClasses?.get(position))
     }
 
@@ -21,5 +25,9 @@ class ClassesAdapter() : RecyclerView.Adapter<HearthstoneViewHolder>() {
     fun setData(newClassesList: List<String?>?) {
         this.hearthstoneClasses = newClassesList
         notifyDataSetChanged()
+    }
+
+    class OnClickListener(val clickListener: (namClass: String?) -> Unit) {
+        fun onClick(namClass: String?) = clickListener(namClass)
     }
 }

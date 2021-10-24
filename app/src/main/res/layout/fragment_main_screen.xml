@@ -22,11 +22,11 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:src="@drawable/emblem"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/emblem"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/searchCards"
@@ -38,26 +38,26 @@
             android:hint="Search cards"
             android:inputType="text"
             android:minHeight="48dp"
+            android:onTextChanged="@{(text, start, before, count) -> viewModel.updateSearch(text)}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView"
-            android:onTextChanged="@{(text, start, before, count) -> viewModel.updateSearch(text)}" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:onClick="@{() -> viewModel.searchButton()}"
             android:text="Search"
             app:layout_constraintBottom_toBottomOf="@+id/searchCards"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/searchCards"
-            android:onClick="@{() -> viewModel.searchCards()}"/>
+            app:layout_constraintStart_toEndOf="@+id/searchCards" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/main_screen_RV"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,16 +72,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:src="@drawable/logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2"
-            android:src="@drawable/logo"/>
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
         <ImageView
             android:id="@+id/loadingIV"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:foregroundGravity="center"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -12,7 +12,8 @@
         tools:layout="@layout/fragment_main_screen" >
         <action
             android:id="@+id/action_navigation_mainScreen_to_cardsFragment"
-            app:destination="@id/cardsFragment" />
+            app:destination="@id/cardsFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment
@@ -35,7 +36,7 @@
             android:id="@+id/action_cardsFragment_to_navigation_mainScreen2"
             app:destination="@id/navigation_mainScreen" />
         <argument
-            android:name="listCardResponse"
-            app:argType="com.example.hearthstoneapp.data.network.model.SearchResponse"/>
+            android:name="searchCard"
+            app:argType="string"/>
     </fragment>
 </navigation>

@@ -18,13 +18,14 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
 
     private val _hearthStoneClasses = MutableLiveData<List<String?>>()
     val hearthStoneClasses: LiveData<List<String?>> = _hearthStoneClasses
-    val dispatcher = Dispatchers.IO
-
-    private val _cardsFound = MutableLiveData<List<SearchResponse>?>()
-    val cardsFound: LiveData<List<SearchResponse>?> = _cardsFound
 
     private val _search = MutableLiveData<String?>()
     val search: LiveData<String?> = _search
+
+    private val _navitagionToCards = MutableLiveData<Boolean>()
+    val navitagionToCards: LiveData<Boolean> = _navitagionToCards
+
+    val dispatcher = Dispatchers.IO
 
 
     fun fetchClassList() {
@@ -33,7 +34,6 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
             when (val response = repo.fetchHearthStoneClasses(dispatcher)) {
                 is ServiceResult.Succes -> {
                     _hearthStoneClasses.postValue(response.data?.classes)
-                    Timber.d("Oh- oh... You've done fucked up...")
                 }
                 is ServiceResult.Error -> {
                     Timber.d("Error was found when calling Heartstone classes :: ${response.exception}")
@@ -45,38 +45,15 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
         }
     }
 
-    fun searchCards() {
-        if (_search.value != null) {
-            viewModelScope.launch(dispatcher) {
-
-                when (val response = _search.value?.let { repo.searchCards(dispatcher, it) }) {
-                    is ServiceResult.Succes -> {
-                        _cardsFound.postValue(response.data)
-                    }
-                    is ServiceResult.Error -> {
-                        Timber.d("Error was found when calling Heartstone classes :: ${response.exception}")
-                    }
-                    else -> {
-                        Timber.d("Oh- oh... You've done fucked up...")
-                    }
-                }
-
-            }
-        } else {
-            Toast.makeText(
-                app.applicationContext,
-                "Please enter what you want to search for",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
     fun updateSearch(text: CharSequence) {
-        Log.d("Yoshi","$text")
         _search.value = text.toString()
     }
 
-    fun searchCardsComplete(){
-        _search.value = null
+    fun searchButton(){
+        _navitagionToCards.value = true
+    }
+
+    fun doneNavigation(){
+        _navitagionToCards.value = false
     }
 }

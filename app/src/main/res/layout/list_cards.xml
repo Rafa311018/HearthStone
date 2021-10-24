@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp">
 
     <data>
+
         <variable
             name="card"
             type="com.example.hearthstoneapp.data.network.model.SearchResponse" />
+
         <variable
             name="viewModel"
             type="com.example.hearthstoneapp.ui.cards.CardsViewModel" />
@@ -15,7 +19,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#9ce3ec">
+        android:background="#9ce3ec">
 
         <ImageView
             android:id="@+id/imageViewCard"
@@ -26,45 +30,58 @@
             android:src="@drawable/no_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:imageUrl="@{card.img}"/>
 
         <TextView
             android:id="@+id/nameCard"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toEndOf="@+id/imageViewCard"
             app:layout_constraintTop_toTopOf="@+id/imageViewCard"
+            app:text="@{card.name}"
             tools:text="Bear Form" />
 
         <TextView
             android:id="@+id/typeCard"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toEndOf="@+id/imageViewCard"
             app:layout_constraintTop_toBottomOf="@+id/nameCard"
+            app:text="@{card.type}"
             tools:text="Spell" />
 
         <TextView
             android:id="@+id/rarityCard"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toEndOf="@+id/imageViewCard"
             app:layout_constraintTop_toBottomOf="@+id/typeCard"
+            app:text="@{card.rarity}"
             tools:text="Common" />
 
         <TextView
             android:id="@+id/cardSet"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toEndOf="@+id/imageViewCard"
             app:layout_constraintTop_toBottomOf="@+id/rarityCard"
+            app:text="@{card.cardSet}"
             tools:text="Vanilla" />
 
         <ImageView

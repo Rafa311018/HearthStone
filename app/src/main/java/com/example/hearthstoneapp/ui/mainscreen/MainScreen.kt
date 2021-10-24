@@ -31,7 +31,10 @@ class MainScreen : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        adapter = ClassesAdapter()
+        adapter = ClassesAdapter(ClassesAdapter.OnClickListener {
+            this.findNavController().navigate(MainScreenDirections.actionNavigationMainScreenToCardsFragment(
+                requireNotNull(it)))
+        })
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main_screen, container, false)
         binding.lifecycleOwner = this
         binding.mainScreenRV.adapter = adapter
@@ -40,10 +43,10 @@ class MainScreen : Fragment() {
         binding.mainScreenRV.visibility = View.GONE
         binding.loadingIV.visibility = View.VISIBLE
 
-        viewModel.cardsFound.observe(viewLifecycleOwner, { cards ->
-            if (null != cards) {
-                this.findNavController().navigate(MainScreenDirections.actionNavigationMainScreenToCardsFragment())
-                viewModel.searchCardsComplete()
+        viewModel.navitagionToCards.observe(viewLifecycleOwner, {
+            if (it) {
+                this.findNavController().navigate(MainScreenDirections.actionNavigationMainScreenToCardsFragment(viewModel.search.value!!))
+                viewModel.doneNavigation()
             }
         })
 
