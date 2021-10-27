@@ -13,6 +13,7 @@ import com.example.hearthstoneapp.data.database.FavoriteDatabase
 import com.example.hearthstoneapp.databinding.FragmentCardsBinding
 import com.example.hearthstoneapp.ui.cards.adapter.CardListener
 import com.example.hearthstoneapp.ui.cards.adapter.CardsAdapter
+import com.example.hearthstoneapp.ui.favorites.FavoritesFragmentDirections
 import com.example.hearthstoneapp.util.createViewModel
 
 class CardsFragment : Fragment() {
@@ -22,12 +23,6 @@ class CardsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        var adapter = CardsAdapter(CardListener { card ->
-            this.findNavController().navigate(CardsFragmentDirections.actionCardsFragmentToCardDetailsFragment(
-                card
-            ))
-        })
-
         val application = requireNotNull(this.activity).application
         val dataSource = FavoriteDatabase.getInstance(application).favoriteDatabaseDao
 
@@ -36,6 +31,19 @@ class CardsFragment : Fragment() {
                 CardsViewModel(HearthStoneRepo.provideHearthStoneRepo(), requireActivity().application, dataSource)
             }
         }
+
+        var adapter = CardsAdapter(CardListener { card, click ->
+            if (click == "details") {
+                this.findNavController().navigate(
+                    FavoritesFragmentDirections.actionNavigationFavoritesToCardDetailsFragment(
+                        card
+                    )
+                )
+            }else{
+                viewModel.addFavorite(card)
+            }
+        })
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_cards, container, false)
         binding.lifecycleOwner = this
         binding.cardList.adapter = adapter

@@ -109,4 +109,19 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
     fun doneSearch(){
         _startSearch.value = false
     }
+
+    fun addFavorite(card: SearchResponse){
+        val insertCard = FavoriteCard()
+        insertCard.cardId = card.cardId
+        insertCard.cardSet = card.cardSet
+        insertCard.type = card.type
+        insertCard.rarity = card.rarity
+        insertCard.playerClass = card.playerClass
+        insertCard.name = card.name.toString()
+        insertCard.img = card.img
+        insertCard.effect = card.effect
+        viewModelScope.launch(Dispatchers.IO) {
+            database.insert(insertCard)
+        }
+    }
 }

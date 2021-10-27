@@ -2,6 +2,7 @@ package com.example.hearthstoneapp.ui.cards.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -53,6 +54,8 @@ class CardsAdapter(val clickListener: CardListener) :
                     binding.likeIcon.setImageResource(R.drawable.basic_heart_fill)
                 else binding.likeIcon.setImageResource(R.drawable.basic_heart_outline)
             }
+            binding.likeIconF.visibility = View.GONE
+            binding.likeIcon.visibility = View.VISIBLE
             binding.executePendingBindings()
         }
 
@@ -84,6 +87,7 @@ sealed class DataItem {
     abstract val id: String
 }
 
-class CardListener(val clickListener: (card: SearchResponse) -> Unit) {
-    fun onClickCard(card: SearchResponse) = clickListener(card)
+class CardListener(val clickListener: (card: SearchResponse, click: String) -> Unit) {
+    fun onClickCard(card: SearchResponse) = clickListener(card, "details")
+    fun onClickCardF(card: SearchResponse) = clickListener(card,"favorite")
 }

@@ -36,11 +36,18 @@ class FavoritesFragment : Fragment() {
                 )
             }
         }
-        var adapter = FavoritesAdapter(FavoritesListener { favorite ->
-            val card = viewModel.updateCard(favorite)
-            this.findNavController().navigate(FavoritesFragmentDirections.actionNavigationFavoritesToCardDetailsFragment(
-                card
-            ))
+        var adapter = FavoritesAdapter(FavoritesListener { favorite, click ->
+            if (click == "details") {
+                val card = viewModel.updateCard(favorite)
+                this.findNavController().navigate(
+                    FavoritesFragmentDirections.actionNavigationFavoritesToCardDetailsFragment(
+                        card
+                    )
+                )
+            }else{
+                viewModel.deleteFavorite(favorite)
+                viewModel.updateList()
+            }
         })
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_favorites, container, false)
@@ -52,7 +59,7 @@ class FavoritesFragment : Fragment() {
                 adapter.setData(it)
                 binding.noFavorites.visibility = View.GONE
                 binding.favoriteList.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.noFavorites.visibility = View.VISIBLE
                 binding.favoriteList.visibility = View.GONE
             }
