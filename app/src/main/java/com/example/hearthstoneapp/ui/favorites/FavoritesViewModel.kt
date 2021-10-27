@@ -1,6 +1,5 @@
 package com.example.hearthstoneapp.ui.favorites
 
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +9,6 @@ import com.example.hearthstoneapp.data.database.FavoriteDatabaseDao
 import com.example.hearthstoneapp.data.network.model.SearchResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 
 class FavoritesViewModel(
     val database: FavoriteDatabaseDao
@@ -29,15 +27,21 @@ class FavoritesViewModel(
     }
 
     fun updateCard(card: FavoriteCard): SearchResponse {
-        val fcard = SearchResponse()
-        fcard.cardId = card.cardId
-        fcard.cardSet = card.cardSet
-        fcard.effect = card.effect
-        fcard.img = card.img
-        fcard.type = card.type
-        fcard.rarity = card.rarity
-        fcard.playerClass = card.playerClass
-        fcard.name = card.name
-        return fcard
+        val fCard = SearchResponse()
+        fCard.cardId = card.cardId
+        fCard.cardSet = card.cardSet
+        fCard.effect = card.effect
+        fCard.img = card.img
+        fCard.type = card.type
+        fCard.rarity = card.rarity
+        fCard.playerClass = card.playerClass
+        fCard.name = card.name
+        return fCard
+    }
+
+    fun deleteFavorite(card: FavoriteCard){
+        viewModelScope.launch(Dispatchers.IO) {
+            database.delete(card.cardId)
+        }
     }
 }

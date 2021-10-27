@@ -1,6 +1,8 @@
 package com.example.hearthstoneapp.ui.favorites.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -38,7 +40,10 @@ class FavoritesAdapter(val clickListener: FavoritesListener) : ListAdapter<DataI
         fun bind(item: FavoriteCard, clickListener: FavoritesListener) {
             binding.favorite = item
             binding.favoriteListener = clickListener
-            binding.likeIcon.setImageResource(R.drawable.basic_heart_fill)
+            binding.likeIconF.setImageResource(R.drawable.basic_heart_fill)
+            binding.likeIconF.visibility = View.VISIBLE
+            binding.likeIcon.visibility = View.GONE
+            Log.d("Yoshi", "hearth_fill")
             binding.executePendingBindings()
         }
 
@@ -70,6 +75,7 @@ sealed class DataItem {
     abstract val id: String
 }
 
-class FavoritesListener(val clickListener: (card: FavoriteCard) -> Unit) {
-    fun onClickCard(card: FavoriteCard) = clickListener(card)
+class FavoritesListener(val clickListener: (card: FavoriteCard, click: String) -> Unit) {
+    fun onClickCard(card: FavoriteCard) = clickListener(card, "details")
+    fun onClickCardF(card: FavoriteCard) = clickListener(card,"favorite")
 }
