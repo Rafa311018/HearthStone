@@ -30,10 +30,25 @@ class HearthStoneRepoImpl() : HearthStoneRepo {
 
     override suspend fun searchCards(
         viewModelDispatcher: CoroutineDispatcher,
-        sName: String
+        cName: String
     ): ServiceResult<List<SearchResponse>?> {
         return withContext(viewModelDispatcher) {
-            val dataResponse = retroObject.searchCards(name = sName)
+            val dataResponse = retroObject.searchCards(name = cName)
+
+            if (dataResponse.isSuccessful) {
+                ServiceResult.Succes(dataResponse.body())
+            } else {
+                ServiceResult.Error(Exception(dataResponse.errorBody().toString()))
+            }
+        }
+    }
+
+    override suspend fun searchCardsbyClass(
+        viewModelDispatcher: CoroutineDispatcher,
+        cName: String
+    ): ServiceResult<List<SearchResponse>?> {
+        return withContext(viewModelDispatcher) {
+            val dataResponse = retroObject.searchCardsbyClass(cardClass = cName)
 
             if (dataResponse.isSuccessful) {
                 ServiceResult.Succes(dataResponse.body())

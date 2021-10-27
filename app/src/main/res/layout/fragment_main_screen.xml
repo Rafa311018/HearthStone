@@ -35,7 +35,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:ems="10"
-            android:hint="Search cards"
+            android:hint="@string/search_cards"
             android:inputType="text"
             android:minHeight="48dp"
             android:onTextChanged="@{(text, start, before, count) -> viewModel.updateSearch(text)}"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:onClick="@{() -> viewModel.searchButton()}"
-            android:text="Search"
+            android:text="@string/search"
             app:layout_constraintBottom_toBottomOf="@+id/searchCards"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/searchCards" />
@@ -57,7 +57,7 @@
             android:id="@+id/main_screen_RV"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -66,6 +66,18 @@
             app:spanCount="4"
             tools:itemCount="14"
             tools:listitem="@layout/grid_item_class" />
+
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchCards"
+            android:visibility="gone"
+            android:text="@string/error_message"
+            android:gravity="center"/>
 
         <ImageView
             android:id="@+id/imageView"
@@ -83,11 +95,23 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:foregroundGravity="center"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchCards" />
+
+        <ImageView
+            android:id="@+id/imgLoading"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:foregroundGravity="center"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchCards"
+            android:src="@drawable/loading_animation"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

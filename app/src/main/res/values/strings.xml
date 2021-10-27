@@ -7,4 +7,12 @@
     <string name="title_mainscreen">Main</string>
     <string name="title_favorites">Favorites</string>
     <string name="title_shops">Shops</string>
+    <string name="error_message">something went wrong :c</string>
+    <string name="search">Search</string>
+    <string name="search_results">Search results for \"" %s "\" </string>
+    <string name="search_cards">Search cards</string>
+    <string name="card_not_found">Card not found.</string>
+    <string name="type">Type: </string>
+    <string name="your_favorites">Your Favorites</string>
+    <string name="no_favorites">You have no favorites</string>
 </resources>

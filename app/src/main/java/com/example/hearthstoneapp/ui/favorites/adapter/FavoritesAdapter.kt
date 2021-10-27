@@ -1,6 +1,5 @@
-package com.example.hearthstoneapp.ui.cards.adapter
+package com.example.hearthstoneapp.ui.favorites.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -8,13 +7,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hearthstoneapp.R
 import com.example.hearthstoneapp.data.database.FavoriteCard
-import com.example.hearthstoneapp.data.network.model.SearchResponse
 import com.example.hearthstoneapp.databinding.ListCardsBinding
 
-class CardsAdapter(val clickListener: CardListener) :
-    ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallBack()) {
-    private var hearthstoneCards: List<SearchResponse?>? = listOf()
-    private var favoriteList: List<String>? = listOf()
+class FavoritesAdapter(val clickListener: FavoritesListener) : ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallBack()) {
+    private var hearthstoneCards: List<FavoriteCard?>? = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return ViewHolder.from(parent)
@@ -23,7 +19,7 @@ class CardsAdapter(val clickListener: CardListener) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder -> {
-                hearthstoneCards?.get(position)?.let { holder.bind(it, clickListener, favoriteList) }
+                hearthstoneCards?.get(position)?.let { holder.bind(it, clickListener) }
             }
         }
     }
@@ -32,27 +28,17 @@ class CardsAdapter(val clickListener: CardListener) :
         return hearthstoneCards?.size ?: 0
     }
 
-    fun setData(newCardsList: List<SearchResponse?>?, favoriteList: List<String>?) {
+    fun setData(newCardsList: List<FavoriteCard?>?) {
         this.hearthstoneCards = newCardsList
-        this.favoriteList = favoriteList
         notifyDataSetChanged()
     }
 
     class ViewHolder private constructor(val binding: ListCardsBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(
-            item: SearchResponse,
-            clickListener: CardListener,
-            favoriteList: List<String>?
-        ) {
-            binding.card = item
-            binding.cardListener = clickListener
-            if (favoriteList != null) {
-                Log.d("Yoshi", "${favoriteList}")
-                if (favoriteList.contains(item.cardId))
-                    binding.likeIcon.setImageResource(R.drawable.basic_heart_fill)
-                else binding.likeIcon.setImageResource(R.drawable.basic_heart_outline)
-            }
+        fun bind(item: FavoriteCard, clickListener: FavoritesListener) {
+            binding.favorite = item
+            binding.favoriteListener = clickListener
+            binding.likeIcon.setImageResource(R.drawable.basic_heart_fill)
             binding.executePendingBindings()
         }
 
@@ -77,13 +63,13 @@ class DiffCallBack : DiffUtil.ItemCallback<DataItem>() {
 }
 
 sealed class DataItem {
-    data class CardItem(val card: SearchResponse) : DataItem() {
+    data class CardItem(val card: FavoriteCard) : DataItem() {
         override val id = card.cardId
     }
 
     abstract val id: String
 }
 
-class CardListener(val clickListener: (card: SearchResponse) -> Unit) {
-    fun onClickCard(card: SearchResponse) = clickListener(card)
+class FavoritesListener(val clickListener: (card: FavoriteCard) -> Unit) {
+    fun onClickCard(card: FavoriteCard) = clickListener(card)
 }

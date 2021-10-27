@@ -9,6 +9,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 interface HearthStoneRepo {
     suspend fun fetchHearthStoneClasses(viewModelDispatcher: CoroutineDispatcher): ServiceResult<HearthStoneResponse?>
     suspend fun searchCards(viewModelDispatcher: CoroutineDispatcher, cName: String): ServiceResult<List<SearchResponse>?>
+    suspend fun searchCardsbyClass(viewModelDispatcher: CoroutineDispatcher, cName: String): ServiceResult<List<SearchResponse>?>
+
 
     companion object{
         fun provideHearthStoneRepo(): HearthStoneRepo{

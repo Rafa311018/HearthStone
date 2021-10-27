@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.carddetails.CardDetailsFragment">
+
+    <data>
+        <variable
+            name="cardDetails"
+            type="com.example.hearthstoneapp.data.network.model.SearchResponse" />
+
+        <variable
+            name="viewModel"
+            type="com.example.hearthstoneapp.ui.carddetails.CardDetailsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Mana Bind"
+            android:text="@{cardDetails.name}"/>
+
+        <TextView
+            android:id="@+id/nameClass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nameTextView"
+            tools:text="Mage"
+            android:text="@{cardDetails.playerClass}"/>
+
+        <ImageView
+            android:id="@+id/cardImgView"
+            android:layout_width="210dp"
+            android:layout_height="275dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nameClass"
+            tools:src="@drawable/no_image"
+            app:imgUrl="@{cardDetails.img}"/>
+
+        <LinearLayout
+            android:id="@+id/detailsLL"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="#6ed2c1 "
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardImgView">
+
+            <TextView
+                android:id="@+id/cardType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:type="@{cardDetails.type}"
+                tools:text="Type: Spell”" />
+
+            <TextView
+                android:id="@+id/rarityCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:rarity="@{cardDetails.rarity}"
+                tools:text="Rarity: Rare" />
+
+            <TextView
+                android:id="@+id/cardSet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:set="@{cardDetails.cardSet}"
+                tools:text="Set: Journey to Un’Goro" />
+
+            <TextView
+                android:id="@+id/effecCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:effect="@{cardDetails.effect}"
+                tools:text="Effect: Secret: when your opponent casts a spell, add a copy to your hand that costs (0). " />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/favoriteImageView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/basic_heart_outline"
+            app:layout_constraintBottom_toTopOf="@+id/cardImgView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/nameClass"
+            app:layout_constraintTop_toBottomOf="@+id/nameClass"
+            android:onClick="@{() -> viewModel.clickOnFavorite(cardDetails)}"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

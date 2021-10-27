@@ -20,7 +20,11 @@
         android:id="@+id/navigation_favorites"
         android:name="com.example.hearthstoneapp.ui.favorites.FavoritesFragment"
         android:label="@string/title_favorites"
-        tools:layout="@layout/fragment_favorites" />
+        tools:layout="@layout/fragment_favorites" >
+        <action
+            android:id="@+id/action_navigation_favorites_to_cardDetailsFragment"
+            app:destination="@id/cardDetailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_shops"
@@ -38,5 +42,20 @@
         <argument
             android:name="searchCard"
             app:argType="string"/>
+        <argument
+            android:name="searchby"
+            app:argType="string"/>
+        <action
+            android:id="@+id/action_cardsFragment_to_cardDetailsFragment"
+            app:destination="@id/cardDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cardDetailsFragment"
+        android:name="com.example.hearthstoneapp.ui.carddetails.CardDetailsFragment"
+        android:label="fragment_card_details"
+        tools:layout="@layout/fragment_card_details">
+        <argument
+            android:name="cardDetails"
+            app:argType="com.example.hearthstoneapp.data.network.model.SearchResponse"/>
     </fragment>
 </navigation>

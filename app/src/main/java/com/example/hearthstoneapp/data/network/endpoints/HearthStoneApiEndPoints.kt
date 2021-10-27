@@ -21,4 +21,11 @@ interface HearthStoneApiEndPoints {
         @Header("x-rapidapi-key") key: String = API_KEY,
         @Path("name") name: String
     ): Response<List<SearchResponse>>
+
+    @GET("cards/classes/{cardClass}")
+    suspend fun searchCardsbyClass(
+        @Header("x-rapidapi-host") host: String = "omgvamp-hearthstone-v1.p.rapidapi.com",
+        @Header("x-rapidapi-key") key: String = API_KEY,
+        @Path("cardClass") cardClass: String
+    ): Response<List<SearchResponse>>
 }

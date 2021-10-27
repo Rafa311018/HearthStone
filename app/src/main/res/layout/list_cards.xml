@@ -12,8 +12,24 @@
             type="com.example.hearthstoneapp.data.network.model.SearchResponse" />
 
         <variable
-            name="viewModel"
+            name="cardListener"
+            type="com.example.hearthstoneapp.ui.cards.adapter.CardListener" />
+
+        <variable
+            name="favorite"
+            type="com.example.hearthstoneapp.data.database.FavoriteCard" />
+
+        <variable
+            name="favoriteListener"
+            type="com.example.hearthstoneapp.ui.favorites.adapter.FavoritesListener" />
+
+        <variable
+            name="viewModelCard"
             type="com.example.hearthstoneapp.ui.cards.CardsViewModel" />
+
+        <variable
+            name="viewModelFavoriteCard"
+            type="com.example.hearthstoneapp.ui.favorites.FavoritesViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,69 +39,94 @@
 
         <ImageView
             android:id="@+id/imageViewCard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="87dp"
+            android:layout_height="87dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/no_image"
+            android:onClick="@{() -> cardListener.onClickCard(card)}"
+            android:src="@drawable/loading_animation"
+            app:cImgUrl="@{card.img}"
+            app:card="@{card}"
+            app:fImgUrl="@{favorite.img}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:imageUrl="@{card.img}"/>
+            app:layout_constraintTop_toTopOf="@+id/nameCard" />
+
+
+        <ImageView
+            android:id="@+id/imageViewFavoriteCard"
+            android:layout_width="87dp"
+            android:layout_height="87dp"
+            android:layout_marginStart="16dp"
+            android:onClick="@{() -> favoriteListener.onClickCard(favorite)}"
+            android:src="@drawable/loading_animation"
+            android:visibility="gone"
+            app:cImgUrl="@{card.img}"
+            app:fImgUrl="@{favorite.img}"
+            app:favorite="@{favorite}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/nameCard" />
 
         <TextView
             android:id="@+id/nameCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="120dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/imageViewCard"
-            app:layout_constraintTop_toTopOf="@+id/imageViewCard"
-            app:text="@{card.name}"
+            app:cName="@{card.name}"
+            app:fName="@{favorite.name}"
+            app:layout_constraintEnd_toStartOf="@+id/likeIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Bear Form" />
 
         <TextView
             android:id="@+id/typeCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="120dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/imageViewCard"
+            app:cType="@{card.type}"
+            app:fType="@{favorite.type}"
+            app:layout_constraintEnd_toStartOf="@+id/likeIcon"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nameCard"
-            app:text="@{card.type}"
             tools:text="Spell" />
 
         <TextView
             android:id="@+id/rarityCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="120dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/imageViewCard"
+            app:cRarity="@{card.rarity}"
+            app:fRarity="@{favorite.rarity}"
+            app:layout_constraintEnd_toStartOf="@+id/likeIcon"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/typeCard"
-            app:text="@{card.rarity}"
             tools:text="Common" />
 
         <TextView
             android:id="@+id/cardSet"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="120dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/imageViewCard"
+            android:layout_marginBottom="8dp"
+            app:cCardSet="@{card.cardSet}"
+            app:fCardSet="@{favorite.cardSet}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/likeIcon"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rarityCard"
-            app:text="@{card.cardSet}"
             tools:text="Vanilla" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/likeIcon"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="16dp"
