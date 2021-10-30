@@ -36,7 +36,6 @@ class CardDetailsViewModel(
     }
 
     fun favoriteHeart() {
-        Log.d("Yoshi", "favorite Card: ${_favoriteCard.value?.cardId}")
         if (_favoriteCard.value?.cardId != " "){
             _favorite.postValue(true)
         }else{

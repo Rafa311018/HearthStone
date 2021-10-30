@@ -15,7 +15,8 @@ class HearthstoneViewHolder(inflater: LayoutInflater, parent: ViewGroup) : Recyc
     )
 ) {
     val className = itemView.findViewById<TextView>(R.id.nameClass)
-    val classImage = itemView.findViewById<ImageView>(R.id.classImg)
+    val classImage: ImageView = itemView.findViewById<ImageView>(R.id.classImg)
+
     fun bind(classDataWrapper: String?) {
         className.text = classDataWrapper
         classImage.setImageResource(

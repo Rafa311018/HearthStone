@@ -43,7 +43,6 @@ class FavoritesAdapter(val clickListener: FavoritesListener) : ListAdapter<DataI
             binding.likeIconF.setImageResource(R.drawable.basic_heart_fill)
             binding.likeIconF.visibility = View.VISIBLE
             binding.likeIcon.visibility = View.GONE
-            Log.d("Yoshi", "hearth_fill")
             binding.executePendingBindings()
         }
 

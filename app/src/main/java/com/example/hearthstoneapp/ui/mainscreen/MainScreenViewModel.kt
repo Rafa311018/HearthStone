@@ -1,7 +1,6 @@
 package com.example.hearthstoneapp.ui.mainscreen
 
 import android.app.Application
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,8 +20,8 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
     private val _card = MutableLiveData<String?>()
     val card: LiveData<String?> = _card
 
-    private val _navitagateToCards = MutableLiveData<Boolean>()
-    val navitagateToCards: LiveData<Boolean> = _navitagateToCards
+    private val _navigateToCards = MutableLiveData<Boolean>()
+    val navigateToCards: LiveData<Boolean> = _navigateToCards
 
     private val _showCards = MutableLiveData<Boolean>()
     val showCards: LiveData<Boolean> = _showCards
@@ -43,11 +42,11 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
                         _showCards.postValue(false)
                     }
                     else -> {
-                        Log.d("Yoshi", "Oh- oh... You've done fucked up...")
+                        Timber.d("Oh- oh... You've done fucked up...")
                     }
                 }
             } catch (e: Exception) {
-                Log.d("Yoshi", "$e")
+                Timber.d(e)
             }
         }
     }
@@ -58,7 +57,7 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
 
     fun searchButton() {
         if (null != _card.value){
-            _navitagateToCards.value = true
+            _navigateToCards.value = true
         }
         else{
             Toast.makeText(app?.applicationContext,"type what you want to search for", Toast.LENGTH_SHORT).show()
@@ -66,6 +65,6 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
     }
 
     fun doneNavigation() {
-        _navitagateToCards.value = false
+        _navigateToCards.value = false
     }
 }

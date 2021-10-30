@@ -12,7 +12,7 @@ import com.example.hearthstoneapp.data.database.FavoriteCard
 import com.example.hearthstoneapp.data.network.model.SearchResponse
 import com.example.hearthstoneapp.databinding.ListCardsBinding
 
-class CardsAdapter(val clickListener: CardListener) :
+class CardsAdapter(private val clickListener: CardListener) :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallBack()) {
     private var hearthstoneCards: List<SearchResponse?>? = listOf()
     private var favoriteList: List<String>? = listOf()
@@ -49,7 +49,6 @@ class CardsAdapter(val clickListener: CardListener) :
             binding.card = item
             binding.cardListener = clickListener
             if (favoriteList != null) {
-                Log.d("Yoshi", "${favoriteList}")
                 if (favoriteList.contains(item.cardId))
                     binding.likeIcon.setImageResource(R.drawable.basic_heart_fill)
                 else binding.likeIcon.setImageResource(R.drawable.basic_heart_outline)

@@ -1,6 +1,7 @@
 package com.example.hearthstoneapp.ui.cards
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,6 @@ import com.example.hearthstoneapp.data.database.FavoriteDatabase
 import com.example.hearthstoneapp.databinding.FragmentCardsBinding
 import com.example.hearthstoneapp.ui.cards.adapter.CardListener
 import com.example.hearthstoneapp.ui.cards.adapter.CardsAdapter
-import com.example.hearthstoneapp.ui.favorites.FavoritesFragmentDirections
 import com.example.hearthstoneapp.util.createViewModel
 
 class CardsFragment : Fragment() {
@@ -28,19 +28,23 @@ class CardsFragment : Fragment() {
 
         val viewModel: CardsViewModel by lazy {
             createViewModel {
-                CardsViewModel(HearthStoneRepo.provideHearthStoneRepo(), requireActivity().application, dataSource)
+                CardsViewModel(
+                    HearthStoneRepo.provideHearthStoneRepo(),
+                    requireActivity().application,
+                    dataSource
+                )
             }
         }
 
         var adapter = CardsAdapter(CardListener { card, click ->
             if (click == "details") {
                 this.findNavController().navigate(
-                    FavoritesFragmentDirections.actionNavigationFavoritesToCardDetailsFragment(
+                    CardsFragmentDirections.actionCardsFragmentToCardDetailsFragment(
                         card
                     )
                 )
-            }else{
-                viewModel.addFavorite(card)
+            } else {
+                viewModel.clickFavorite(card)
             }
         })
 
@@ -63,17 +67,27 @@ class CardsFragment : Fragment() {
         })
         viewModel.searchString.observe(viewLifecycleOwner, {
             binding.nameClass.text = it
-            if (it.contains("Search results for")){
+            if (it.contains("Search results for")) {
                 binding.searchButton.visibility = View.VISIBLE
                 binding.searchCardsTextView.visibility = View.VISIBLE
             }
         })
         viewModel.startSearch.observe(viewLifecycleOwner, {
-            if (it){
+            if (it) {
                 binding.imgLoading.visibility = View.VISIBLE
                 binding.cardList.visibility = View.GONE
                 binding.cardNotFound.visibility = View.GONE
-             viewModel.doneSearch()
+                viewModel.doneSearch()
+            }
+        })
+        viewModel.isFavorite.observe(viewLifecycleOwner, { favorite ->
+            if (favorite == null) viewModel.addFavorite()
+            else viewModel.deleteFavorite()
+        })
+        viewModel.updateData.observe(viewLifecycleOwner, {
+            if (it) {
+                callApi()
+                viewModel.doneUpdate()
             }
         })
 
@@ -82,6 +96,10 @@ class CardsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        callApi()
+    }
+
+    private fun callApi() {
         val card = CardsFragmentArgs.fromBundle(requireArguments()).searchCard
         val search = CardsFragmentArgs.fromBundle(requireArguments()).searchby
         val application = requireNotNull(this.activity).application
@@ -89,7 +107,11 @@ class CardsFragment : Fragment() {
 
         val viewModel: CardsViewModel by lazy {
             createViewModel {
-                CardsViewModel(HearthStoneRepo.provideHearthStoneRepo(), requireActivity().application, dataSource)
+                CardsViewModel(
+                    HearthStoneRepo.provideHearthStoneRepo(),
+                    requireActivity().application,
+                    dataSource
+                )
             }
         }
         viewModel.searchCards(card, search)

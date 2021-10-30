@@ -1,7 +1,6 @@
 package com.example.hearthstoneapp.ui.mainscreen
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +39,7 @@ class MainScreen : Fragment() {
         binding.mainScreenRV.visibility = View.GONE
         binding.loadingIV.visibility = View.VISIBLE
 
-        viewModel.navitagateToCards.observe(viewLifecycleOwner, {
+        viewModel.navigateToCards.observe(viewLifecycleOwner, {
             if (it) {
                 this.findNavController().navigate(MainScreenDirections.actionNavigationMainScreenToCardsFragment(
                     requireNotNull(viewModel.card.value), "card"))

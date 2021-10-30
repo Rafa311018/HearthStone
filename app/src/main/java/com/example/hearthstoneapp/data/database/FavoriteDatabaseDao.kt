@@ -21,6 +21,6 @@ interface FavoriteDatabaseDao {
     fun getAllIdCards(): List<String>?
 
     @Query("SELECT * FROM favorite_cards_table WHERE cardId = :key")
-    fun getCard(key: String): FavoriteCard
+    fun getCard(key: String): FavoriteCard?
 
 }

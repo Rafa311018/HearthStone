@@ -37,8 +37,14 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
     private val _startSearch = MutableLiveData<Boolean>()
     val startSearch: LiveData<Boolean> = _startSearch
 
+    private val _updateData = MutableLiveData<Boolean>()
+    val updateData: LiveData<Boolean> = _updateData
 
-    val dispatcher = Dispatchers.IO
+    private val _isFavorite = MutableLiveData<FavoriteCard>()
+    val isFavorite: LiveData<FavoriteCard> = _isFavorite
+
+    private val insertCard = FavoriteCard()
+    private val dispatcher = Dispatchers.IO
 
     fun searchCards(card: String, search: String) {
         try {
@@ -78,8 +84,8 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
                     }
 
                 }
-                getFavorites()
             }
+            getFavorites()
         } catch (e: Exception) {
             Timber.d(e)
         }
@@ -110,8 +116,7 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
         _startSearch.value = false
     }
 
-    fun addFavorite(card: SearchResponse){
-        val insertCard = FavoriteCard()
+    fun clickFavorite(card: SearchResponse){
         insertCard.cardId = card.cardId
         insertCard.cardSet = card.cardSet
         insertCard.type = card.type
@@ -121,7 +126,25 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
         insertCard.img = card.img
         insertCard.effect = card.effect
         viewModelScope.launch(Dispatchers.IO) {
-            database.insert(insertCard)
+            _isFavorite.postValue(database.getCard(insertCard.cardId))
         }
+    }
+
+    fun addFavorite(){
+        viewModelScope.launch(Dispatchers.IO) {
+            database.insert(insertCard)
+            _updateData.postValue(true)
+        }
+    }
+
+    fun deleteFavorite() {
+        viewModelScope.launch(Dispatchers.IO) {
+            database.delete(insertCard.cardId)
+            _updateData.postValue(true)
+        }
+    }
+
+    fun doneUpdate() {
+        _updateData.value = false
     }
 }
