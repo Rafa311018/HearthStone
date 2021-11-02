@@ -1,6 +1,10 @@
 package com.example.hearthstoneapp.data.network.model
 
-import com.google.android.gms.maps.model.LatLng
+data class MapsResponse(
+    val results: List<PlaceResponse>,
+    val error_message: String,
+    val status: String
+)
 
 data class PlaceResponse(
     val geometry: Geometry,
@@ -19,9 +23,9 @@ data class PlaceResponse(
     )
 }
 
-fun PlaceResponse.toPlace(): Place = Place(
-    name = name,
-    latLng = LatLng(geometry.location.lat, geometry.location.lng),
-    address = vicinity,
-    rating = rating
-)
+//fun PlaceResponse.toPlace(): Place = Place(
+//    name = name,
+//    latLng = LatLng(geometry.location.lat, geometry.location.lng),
+//    address = vicinity,
+//    rating = rating
+//)

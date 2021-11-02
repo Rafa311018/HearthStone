@@ -9,7 +9,7 @@ import retrofit2.http.Header
 import retrofit2.http.Path
 
 interface HearthStoneApiEndPoints {
-    @GET("/info")
+    @GET("info")
     suspend fun getInfo(
         @Header("x-rapidapi-host") host: String = "omgvamp-hearthstone-v1.p.rapidapi.com",
         @Header("x-rapidapi-key") key: String = API_KEY
