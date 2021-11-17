@@ -7,11 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.hearthstoneapp.data.database.FavoriteCard
 import com.example.hearthstoneapp.data.database.FavoriteDatabaseDao
 import com.example.hearthstoneapp.data.network.model.SearchResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FavoritesViewModel(
-    val database: FavoriteDatabaseDao
+@HiltViewModel
+class FavoritesViewModel @Inject constructor(
+    private val HSDao: FavoriteDatabaseDao
 ) : ViewModel() {
 
     private val _cardsFound = MutableLiveData<List<FavoriteCard>?>()
@@ -22,7 +25,7 @@ class FavoritesViewModel(
 
     fun updateList() {
         viewModelScope.launch(Dispatchers.IO) {
-            _cardsFound.postValue(database.getAllCards())
+            _cardsFound.postValue(HSDao.getAllCards())
         }
     }
 
@@ -39,9 +42,9 @@ class FavoritesViewModel(
         return fCard
     }
 
-    fun deleteFavorite(card: FavoriteCard){
+    fun deleteFavorite(card: FavoriteCard) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.delete(card.cardId)
+            HSDao.delete(card.cardId)
         }
     }
 }

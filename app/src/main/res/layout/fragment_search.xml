@@ -2,17 +2,19 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.cards.CardsFragment">
+    tools:context=".ui.search.SearchFragment">
 
     <data>
+
         <variable
             name="viewModel"
-            type="com.example.hearthstoneapp.ui.cards.CardsViewModel" />
+            type="com.example.hearthstoneapp.ui.search.SearchViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_gradient">
 
         <Button
             android:id="@+id/searchButton"
@@ -32,11 +34,11 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:ems="10"
-            android:visibility="gone"
             android:hint="@string/search_cards"
             android:inputType="text"
             android:minHeight="48dp"
             android:onTextChanged="@{(text, start, before, count) -> viewModel.updateSearch(text)}"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nameClass" />
 
@@ -49,13 +51,14 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Class Name"/>
+            tools:text="Class Name" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/cardList"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
+            android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,21 +66,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchCardsTextView"
             tools:listitem="@layout/list_cards"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/cardNotFound"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/card_not_found"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchCardsTextView"
-            android:text="@string/card_not_found"
-            android:gravity="center"
-            android:visibility="gone" />
+            app:layout_constraintTop_toBottomOf="@+id/searchCardsTextView" />
 
         <ImageView
             android:id="@+id/imgLoading"
@@ -91,7 +93,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchCardsTextView"
-            tools:visibility="gone"/>
+            tools:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

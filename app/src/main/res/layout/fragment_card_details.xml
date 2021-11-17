@@ -16,41 +16,42 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/backgroundoverview">
 
         <TextView
             android:id="@+id/nameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
+            android:text="@{cardDetails.name}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Mana Bind"
-            android:text="@{cardDetails.name}"/>
+            tools:text="Mana Bind" />
 
         <TextView
             android:id="@+id/nameClass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:text="@{cardDetails.playerClass}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/nameTextView"
-            tools:text="Mage"
-            android:text="@{cardDetails.playerClass}"/>
+            tools:text="Mage" />
 
         <ImageView
             android:id="@+id/cardImgView"
             android:layout_width="210dp"
             android:layout_height="275dp"
             android:layout_marginTop="32dp"
+            app:imgUrl="@{cardDetails.img}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/nameClass"
-            tools:src="@drawable/no_image"
-            app:imgUrl="@{cardDetails.img}"/>
+            tools:src="@drawable/no_image" />
 
         <LinearLayout
             android:id="@+id/detailsLL"
@@ -110,12 +111,12 @@
             android:layout_height="40dp"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="8dp"
+            android:onClick="@{() -> viewModel.clickOnFavorite(cardDetails)}"
             android:src="@drawable/basic_heart_outline"
             app:layout_constraintBottom_toTopOf="@+id/cardImgView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/nameClass"
-            app:layout_constraintTop_toBottomOf="@+id/nameClass"
-            android:onClick="@{() -> viewModel.clickOnFavorite(cardDetails)}"/>
+            app:layout_constraintTop_toBottomOf="@+id/nameClass" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

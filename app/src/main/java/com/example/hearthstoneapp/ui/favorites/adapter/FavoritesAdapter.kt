@@ -11,7 +11,9 @@ import com.example.hearthstoneapp.R
 import com.example.hearthstoneapp.data.database.FavoriteCard
 import com.example.hearthstoneapp.databinding.ListCardsBinding
 
-class FavoritesAdapter(val clickListener: FavoritesListener) : ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallBack()) {
+class FavoritesAdapter(
+    private val clickListener: FavoritesListener
+) : ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallBack()) {
     private var hearthstoneCards: List<FavoriteCard?>? = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -76,5 +78,5 @@ sealed class DataItem {
 
 class FavoritesListener(val clickListener: (card: FavoriteCard, click: String) -> Unit) {
     fun onClickCard(card: FavoriteCard) = clickListener(card, "details")
-    fun onClickCardF(card: FavoriteCard) = clickListener(card,"favorite")
+    fun onClickCardF(card: FavoriteCard) = clickListener(card, "favorite")
 }

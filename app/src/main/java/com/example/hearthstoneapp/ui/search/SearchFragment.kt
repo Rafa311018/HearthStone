@@ -1,45 +1,34 @@
-package com.example.hearthstoneapp.ui.cards
+package com.example.hearthstoneapp.ui.search
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.example.hearthstone.data.network.repo.HearthStoneRepo
 import com.example.hearthstoneapp.R
-import com.example.hearthstoneapp.data.database.FavoriteDatabase
-import com.example.hearthstoneapp.databinding.FragmentCardsBinding
-import com.example.hearthstoneapp.ui.cards.adapter.CardListener
-import com.example.hearthstoneapp.ui.cards.adapter.CardsAdapter
-import com.example.hearthstoneapp.util.createViewModel
+import com.example.hearthstoneapp.databinding.FragmentSearchBinding
+import com.example.hearthstoneapp.ui.search.adapter.CardListener
+import com.example.hearthstoneapp.ui.search.adapter.CardsAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
-class CardsFragment : Fragment() {
-    private lateinit var binding: FragmentCardsBinding
+@AndroidEntryPoint
+class SearchFragment : Fragment() {
+    val viewModel: SearchViewModel by viewModels()
+
+    private lateinit var binding: FragmentSearchBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val application = requireNotNull(this.activity).application
-        val dataSource = FavoriteDatabase.getInstance(application).favoriteDatabaseDao
-
-        val viewModel: CardsViewModel by lazy {
-            createViewModel {
-                CardsViewModel(
-                    HearthStoneRepo.provideHearthStoneRepo(),
-                    requireActivity().application,
-                    dataSource
-                )
-            }
-        }
 
         var adapter = CardsAdapter(CardListener { card, click ->
             if (click == "details") {
                 this.findNavController().navigate(
-                    CardsFragmentDirections.actionCardsFragmentToCardDetailsFragment(
+                    SearchFragmentDirections.actionCardsFragmentToCardDetailsFragment(
                         card
                     )
                 )
@@ -48,7 +37,9 @@ class CardsFragment : Fragment() {
             }
         })
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_cards, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_search, container, false
+        )
         binding.lifecycleOwner = this
         binding.cardList.adapter = adapter
         binding.viewModel = viewModel
@@ -100,20 +91,9 @@ class CardsFragment : Fragment() {
     }
 
     private fun callApi() {
-        val card = CardsFragmentArgs.fromBundle(requireArguments()).searchCard
-        val search = CardsFragmentArgs.fromBundle(requireArguments()).searchby
-        val application = requireNotNull(this.activity).application
-        val dataSource = FavoriteDatabase.getInstance(application).favoriteDatabaseDao
+        val card = SearchFragmentArgs.fromBundle(requireArguments()).searchCard
+        val search = SearchFragmentArgs.fromBundle(requireArguments()).searchby
 
-        val viewModel: CardsViewModel by lazy {
-            createViewModel {
-                CardsViewModel(
-                    HearthStoneRepo.provideHearthStoneRepo(),
-                    requireActivity().application,
-                    dataSource
-                )
-            }
-        }
         viewModel.searchCards(card, search)
     }
 }

@@ -1,7 +1,6 @@
-package com.example.hearthstoneapp.ui.cards
+package com.example.hearthstoneapp.ui.search
 
 import android.app.Application
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,11 +12,18 @@ import com.example.hearthstoneapp.R
 import com.example.hearthstoneapp.data.database.FavoriteCard
 import com.example.hearthstoneapp.data.database.FavoriteDatabaseDao
 import com.example.hearthstoneapp.data.network.model.SearchResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
-class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val database: FavoriteDatabaseDao) : ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    private val HSRepo: HearthStoneRepo,
+    private val app: Application?,
+    private val HSDao: FavoriteDatabaseDao
+) : ViewModel() {
 
     private val _cardsFound = MutableLiveData<List<SearchResponse>?>()
     val cardsFound: LiveData<List<SearchResponse>?> = _cardsFound
@@ -50,15 +56,23 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
         try {
             if (search == "card") {
                 viewModelScope.launch(dispatcher) {
-                    _searchString.postValue(app?.applicationContext?.getString(R.string.search_results, card))
-                    when (val response = repo.searchCards(dispatcher, card)) {
+                    _searchString.postValue(
+                        app?.applicationContext?.getString(
+                            R.string.search_results,
+                            card
+                        )
+                    )
+                    when (val response = HSRepo.searchCards(card)) {
                         is ServiceResult.Succes -> {
                             _cardsFound.postValue(response.data)
                             _showCards.postValue(true)
                         }
                         is ServiceResult.Error -> {
                             _showCards.postValue(false)
-                            Timber.d("Error was found when calling Heartstone classes :: " + response.exception)
+                            Timber.d(
+                                "Error was found when calling Heartstone classes :: "
+                                        + response.exception
+                            )
                         }
                         else -> {
                             Timber.d("Oh- oh... You've done fucked up...")
@@ -69,14 +83,17 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
             } else {
                 viewModelScope.launch(dispatcher) {
                     _searchString.postValue(card)
-                    when (val response = repo.searchCardsbyClass(dispatcher, card)) {
+                    when (val response = HSRepo.searchCardsByClass(card)) {
                         is ServiceResult.Succes -> {
                             _cardsFound.postValue(response.data)
                             _showCards.postValue(true)
                         }
                         is ServiceResult.Error -> {
                             _showCards.postValue(false)
-                            Timber.d("Error was found when calling Hearthstone classes :: " + response.exception)
+                            Timber.d(
+                                "Error was found when calling Hearthstone classes :: "
+                                        + response.exception
+                            )
                         }
                         else -> {
                             Timber.d("Oh- oh... You've done fucked up...")
@@ -94,7 +111,7 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
 
     private fun getFavorites() {
         viewModelScope.launch(Dispatchers.IO) {
-            _favoriteList.postValue(database.getAllIdCards())
+            _favoriteList.postValue(HSDao.getAllIdCards())
         }
     }
 
@@ -103,20 +120,23 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
     }
 
     fun searchButton() {
-        if (null != _searchCard.value){
+        if (null != _searchCard.value) {
             _startSearch.value = true
-            searchCards(requireNotNull(_searchCard.value),"card")
-        }
-        else{
-            Toast.makeText(app?.applicationContext,"type what you want to search for", Toast.LENGTH_SHORT).show()
+            searchCards(requireNotNull(_searchCard.value), "card")
+        } else {
+            Toast.makeText(
+                app?.applicationContext,
+                "type what you want to search for",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    fun doneSearch(){
+    fun doneSearch() {
         _startSearch.value = false
     }
 
-    fun clickFavorite(card: SearchResponse){
+    fun clickFavorite(card: SearchResponse) {
         insertCard.cardId = card.cardId
         insertCard.cardSet = card.cardSet
         insertCard.type = card.type
@@ -126,20 +146,20 @@ class CardsViewModel(val repo: HearthStoneRepo, val app: Application?, val datab
         insertCard.img = card.img
         insertCard.effect = card.effect
         viewModelScope.launch(Dispatchers.IO) {
-            _isFavorite.postValue(database.getCard(insertCard.cardId))
+            _isFavorite.postValue(HSDao.getCard(insertCard.cardId))
         }
     }
 
-    fun addFavorite(){
+    fun addFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
-            database.insert(insertCard)
+            HSDao.insert(insertCard)
             _updateData.postValue(true)
         }
     }
 
     fun deleteFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
-            database.delete(insertCard.cardId)
+            HSDao.delete(insertCard.cardId)
             _updateData.postValue(true)
         }
     }

@@ -6,21 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.example.hearthstone.data.network.repo.HearthStoneRepo
 import com.example.hearthstoneapp.R
 import com.example.hearthstoneapp.databinding.FragmentMainScreenBinding
 import com.example.hearthstoneapp.ui.mainscreen.adapter.ClassesAdapter
-import com.example.hearthstoneapp.util.createViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainScreen : Fragment() {
 
     private lateinit var binding: FragmentMainScreenBinding
 
-    private val viewModel: MainScreenViewModel by lazy {
-        createViewModel { MainScreenViewModel(app = this.requireActivity().application,
-            HearthStoneRepo.provideHearthStoneRepo()) }
-    }
+    private val viewModel: MainScreenViewModel by viewModels()
+
     private lateinit var adapter: ClassesAdapter
 
     override fun onCreateView(
@@ -28,10 +27,15 @@ class MainScreen : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         adapter = ClassesAdapter(ClassesAdapter.OnClickListener {
-            this.findNavController().navigate(MainScreenDirections.actionNavigationMainScreenToCardsFragment(
-                requireNotNull(it), "class"))
+            this.findNavController().navigate(
+                MainScreenDirections.actionNavigationMainScreenToCardsFragment(
+                    requireNotNull(it), "class"
+                )
+            )
         })
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main_screen, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_main_screen, container, false
+        )
         binding.lifecycleOwner = this
         binding.mainScreenRV.adapter = adapter
         binding.viewModel = viewModel
@@ -41,17 +45,19 @@ class MainScreen : Fragment() {
 
         viewModel.navigateToCards.observe(viewLifecycleOwner, {
             if (it) {
-                this.findNavController().navigate(MainScreenDirections.actionNavigationMainScreenToCardsFragment(
-                    requireNotNull(viewModel.card.value), "card"))
+                this.findNavController().navigate(
+                    MainScreenDirections.actionNavigationMainScreenToCardsFragment(
+                        requireNotNull(viewModel.card.value), "card"
+                    )
+                )
                 viewModel.doneNavigation()
             }
         })
         viewModel.showCards.observe(viewLifecycleOwner, {
-            if (it){
+            if (it) {
                 binding.imgLoading.visibility = View.GONE
                 binding.mainScreenRV.visibility = View.VISIBLE
-            }
-            else {
+            } else {
                 binding.imgLoading.visibility = View.GONE
                 binding.errorMessage.visibility = View.VISIBLE
             }

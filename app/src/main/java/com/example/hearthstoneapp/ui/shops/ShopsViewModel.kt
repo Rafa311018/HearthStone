@@ -2,7 +2,6 @@ package com.example.hearthstoneapp.ui.shops
 
 import android.app.Application
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,12 +9,19 @@ import androidx.lifecycle.viewModelScope
 import com.example.hearthstone.data.network.model.networkmodel.ServiceResult
 import com.example.hearthstone.data.network.repo.HearthStoneRepo
 import com.example.hearthstoneapp.data.network.model.MapsResponse
+import com.example.hearthstoneapp.data.network.repo.GoogleRepo
 import com.google.android.gms.maps.model.LatLng
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
-class ShopsViewModel(val repo: HearthStoneRepo, val app: Application?) : ViewModel() {
+@HiltViewModel
+class ShopsViewModel @Inject constructor(
+    private val GoogleRepo: GoogleRepo,
+    private val dispatcher: Dispatchers
+) : ViewModel() {
 
     private val _searchPlaces = MutableLiveData<MapsResponse?>()
     val searchPlaces: LiveData<MapsResponse?> = _searchPlaces
@@ -26,28 +32,24 @@ class ShopsViewModel(val repo: HearthStoneRepo, val app: Application?) : ViewMod
     val _latLng = MutableLiveData<LatLng>()
     val latLng: LiveData<LatLng> = _latLng
 
-    private val dispatcher = Dispatchers.IO
-
 
     fun searchPlaces(latLng: LatLng) {
-        viewModelScope.launch(dispatcher) {
-            Log.d("Yoshi", "l $latLng")
-//            val lat = (latLng.latitude.toString() + "," + latLng.longitude.toString())
-            when (val response = repo.fetchPlaces(
-                dispatcher,
+        viewModelScope.launch(dispatcher.IO) {
+            when (val response = GoogleRepo.fetchPlaces(
                 (latLng.latitude.toString() + "," + latLng.longitude.toString())
             )) {
                 is ServiceResult.Succes -> {
                     _searchPlaces.postValue(response.data)
-                    Log.d("Yoshi", "$response")
+                    Timber.d(response.toString())
                 }
                 is ServiceResult.Error -> {
-                    Timber.d("Error was found when calling Heartstone classes :: " + response.exception)
-                    Log.d("Yoshi", "$response")
+                    Timber.d(
+                        "Error was found when calling Heartstone classes :: "
+                                + response.exception
+                    )
                 }
                 else -> {
                     Timber.d("Oh- oh... You've done fucked up...")
-                    Log.d("Yoshi", "$response")
                 }
             }
 

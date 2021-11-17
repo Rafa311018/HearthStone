@@ -3,6 +3,9 @@ package com.example.hearthstoneapp.ui.shops
 import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -13,87 +16,112 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.hearthstone.data.network.repo.HearthStoneRepo
-import com.example.hearthstoneapp.MainActivity
+import com.example.hearthstoneapp.ui.MainActivity
 import com.example.hearthstoneapp.R
 import com.example.hearthstoneapp.data.network.model.MapsResponse
 import com.example.hearthstoneapp.data.network.model.PlaceResponse
 import com.example.hearthstoneapp.ui.shops.adapter.BitmapHelper
-import com.example.hearthstoneapp.util.createViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.Task
-import android.widget.TextView
 
-import android.widget.LinearLayout
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-
-import android.widget.ImageView
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import com.example.hearthstoneapp.databinding.FragmentShopsBinding
-import com.google.android.gms.maps.model.Marker
+import com.example.hearthstoneapp.util.secret.API_KEY
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.*
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
+import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
-
+@AndroidEntryPoint
 class ShopsFragment : Fragment(), OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener,
     GoogleMap.OnMapClickListener {
 
-    private lateinit var binding: FragmentShopsBinding
-
-    private lateinit var latLng: LatLng
-
-    private lateinit var mMap: GoogleMap
+    val viewModel: ShopsViewModel by viewModels()
 
     private var moveCamara: Boolean = true
 
+    private lateinit var binding: FragmentShopsBinding
+    private lateinit var latLng: LatLng
+    private lateinit var mMap: GoogleMap
+    private lateinit var gotIcon: Bitmap
+    private lateinit var gotSelectIcon: Bitmap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var placesClient: PlacesClient
+    private lateinit var mapView: MapView
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val viewModel: ShopsViewModel by lazy {
-            createViewModel {
-                ShopsViewModel(
-                    HearthStoneRepo.provideHearthStoneRepo(),
-                    requireActivity().application
-                )
-            }
-        }
+        val hs_shop = BitmapFactory.decodeResource(
+            context?.resources, R.drawable.hs_shop_icon
+        )
+
+        val hs_shop_selected = BitmapFactory.decodeResource(
+            context?.resources, R.drawable.hs_shop_selected_icon
+        )
+
+        gotIcon = Bitmap.createScaledBitmap(
+            hs_shop, 100, 100, true
+        )
+
+        gotSelectIcon = Bitmap.createScaledBitmap(
+            hs_shop_selected, 120, 120, true
+        )
+
         fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity())
-        fetchLocation()
-        viewModel.latLng.observe(viewLifecycleOwner, { latLngO ->
-            viewModel.searchPlaces(latLngO)
-            latLng = latLngO
-            checkForPermissions(android.Manifest.permission.ACCESS_FINE_LOCATION, "location", 101)
-        })
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_shops, container, false)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-//        val supportFragmentManager = (activity as FragmentActivity).supportFragmentManager
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-        viewModel.searchPlaces.observe(viewLifecycleOwner, { places ->
-            val mapsResponse: MapsResponse = places as MapsResponse
-            if (mapsResponse.error_message != "" && mapsResponse.status != "" && mapsResponse.status == "OK") {
-                for (i in mapsResponse.results.indices) {
-                    addMarkers(mapsResponse.results[i], i)
+            LocationServices.getFusedLocationProviderClient(
+                requireActivity()
+            )
+
+        Places.initialize(requireActivity(), API_KEY)
+
+        placesClient = Places.createClient(requireContext())
+
+        val root = binding.root
+
+        mapView = root.findViewById(R.id.map) as MapView
+        mapView.onCreate(savedInstanceState)
+        mapView.getMapAsync(this)
+
+        viewModel.searchPlaces.observe(viewLifecycleOwner, {
+            //bs = bookStore
+            it?.results?.forEach{ bs ->
+                val bsLatLng = LatLng(
+                    bs.geometry.location.lat, bs.geometry.location.lng
+                )
+                val snippet = getAddress(bsLatLng)
+
+                val bsMarker = mMap.addMarker(
+                    MarkerOptions()
+                        .position(bsLatLng)
+                        .title(bs.name)
+                        .snippet(snippet)
+                        .icon(BitmapDescriptorFactory.fromBitmap(gotIcon))
+                )
+                if (bsMarker != null) {
+                    Timber.d("New Marker has been made. " +
+                    "${bsMarker.title} is located in ${bsMarker.position}")
+                    bsMarker.tag = false
                 }
             }
         })
 
-        return binding.root
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_shops, container, false
+        )
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        return root
     }
 
     private fun addMarkers(placeResponse: PlaceResponse, position: Int) {
@@ -131,14 +159,6 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
     }
 
     private fun fetchLocation() {
-        val viewModel: ShopsViewModel by lazy {
-            createViewModel {
-                ShopsViewModel(
-                    HearthStoneRepo.provideHearthStoneRepo(),
-                    requireActivity().application
-                )
-            }
-        }
         val task = fusedLocationProviderClient.lastLocation
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -169,7 +189,11 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
                             )
                         )
                     )
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15f), 2000, null)
+                    mMap.animateCamera(
+                        CameraUpdateFactory.zoomTo(15f),
+                        2000,
+                        null
+                    )
                     moveCamara = false
                 }
             }
@@ -220,11 +244,11 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
     }
 
     private val hearthstoneIcon: BitmapDescriptor by lazy {
-        BitmapHelper.vectorToBitmap(requireContext(), R.drawable.unnamed_copy_4)
+        BitmapHelper.vectorToBitmap(requireContext(), R.drawable.hs_shop_icon)
     }
 
     private val hearthstoneIconSelected: BitmapDescriptor by lazy {
-        BitmapHelper.vectorToBitmap(requireContext(), R.drawable.logo_copy)
+        BitmapHelper.vectorToBitmap(requireContext(), R.drawable.hs_shop_selected_icon)
     }
 
     override fun onMyLocationClick(location: Location) {
@@ -260,4 +284,11 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
         mMap.clear()
         fetchLocation()
     }
+
+    private fun getAddress(lat: LatLng): String? {
+        val geocoder = Geocoder(this.requireContext())
+        val list = geocoder.getFromLocation(lat.latitude, lat.longitude,1)
+        return list[0].getAddressLine(0)
+    }
+
 }

@@ -1,6 +1,5 @@
-package com.example.hearthstoneapp.ui.cards.adapter
+package com.example.hearthstoneapp.ui.search.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hearthstoneapp.R
-import com.example.hearthstoneapp.data.database.FavoriteCard
 import com.example.hearthstoneapp.data.network.model.SearchResponse
 import com.example.hearthstoneapp.databinding.ListCardsBinding
 
@@ -24,7 +22,9 @@ class CardsAdapter(private val clickListener: CardListener) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder -> {
-                hearthstoneCards?.get(position)?.let { holder.bind(it, clickListener, favoriteList) }
+                hearthstoneCards?.get(position)?.let {
+                    holder.bind(it, clickListener, favoriteList)
+                }
             }
         }
     }
@@ -88,5 +88,5 @@ sealed class DataItem {
 
 class CardListener(val clickListener: (card: SearchResponse, click: String) -> Unit) {
     fun onClickCard(card: SearchResponse) = clickListener(card, "details")
-    fun onClickCardF(card: SearchResponse) = clickListener(card,"favorite")
+    fun onClickCardF(card: SearchResponse) = clickListener(card, "favorite")
 }

@@ -1,22 +1,19 @@
 package com.example.hearthstoneapp.ui.carddetails
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import com.example.hearthstone.data.network.repo.HearthStoneRepo
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.hearthstoneapp.R
-import com.example.hearthstoneapp.data.database.FavoriteDatabase
 import com.example.hearthstoneapp.databinding.FragmentCardDetailsBinding
-import com.example.hearthstoneapp.databinding.FragmentMainScreenBinding
-import com.example.hearthstoneapp.ui.cards.CardsFragmentArgs
-import com.example.hearthstoneapp.ui.mainscreen.MainScreenViewModel
-import com.example.hearthstoneapp.util.createViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CardDetailsFragment : Fragment() {
+    val viewModel: CardDetailsViewModel by viewModels()
 
     private lateinit var binding: FragmentCardDetailsBinding
 
@@ -24,19 +21,9 @@ class CardDetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val application = requireNotNull(this.activity).application
-        val dataSource = FavoriteDatabase.getInstance(application).favoriteDatabaseDao
-
-        val viewModel: CardDetailsViewModel by lazy {
-            createViewModel {
-                CardDetailsViewModel(
-                    dataSource, application
-                )
-            }
-        }
-
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_card_details, container, false)
+            DataBindingUtil.inflate(
+                inflater, R.layout.fragment_card_details, container, false)
         binding.lifecycleOwner = this
         val cardDetails = CardDetailsFragmentArgs.fromBundle(requireArguments()).cardDetails
         viewModel.idCard = cardDetails.cardId

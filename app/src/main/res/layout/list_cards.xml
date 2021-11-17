@@ -13,7 +13,7 @@
 
         <variable
             name="cardListener"
-            type="com.example.hearthstoneapp.ui.cards.adapter.CardListener" />
+            type="com.example.hearthstoneapp.ui.search.adapter.CardListener" />
 
         <variable
             name="favorite"
@@ -25,7 +25,7 @@
 
         <variable
             name="viewModelCard"
-            type="com.example.hearthstoneapp.ui.cards.CardsViewModel" />
+            type="com.example.hearthstoneapp.ui.search.SearchViewModel" />
 
         <variable
             name="viewModelFavoriteCard"

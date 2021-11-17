@@ -8,11 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hearthstone.data.network.model.networkmodel.ServiceResult
 import com.example.hearthstone.data.network.repo.HearthStoneRepo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
-class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : ViewModel() {
+@HiltViewModel
+class MainScreenViewModel @Inject constructor(
+    private val app: Application,
+    private val HSRepo: HearthStoneRepo
+) : ViewModel() {
 
     private val _hearthStoneClasses = MutableLiveData<List<String?>>()
     val hearthStoneClasses: LiveData<List<String?>> = _hearthStoneClasses
@@ -32,13 +38,14 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
     fun fetchClassList() {
         viewModelScope.launch(dispatcher) {
             try {
-                when (val response = repo.fetchHearthStoneClasses(dispatcher)) {
+                when (val response = HSRepo.fetchHearthStoneClasses()) {
                     is ServiceResult.Succes -> {
                         _hearthStoneClasses.postValue(response.data?.classes)
                         _showCards.postValue(true)
                     }
                     is ServiceResult.Error -> {
-                        Timber.d("Error was found when calling Heartstone classes :: ${response.exception}")
+                        Timber.d("Error was found when calling Heartstone classes :: " +
+                                "${response.exception}")
                         _showCards.postValue(false)
                     }
                     else -> {
@@ -56,11 +63,14 @@ class MainScreenViewModel(val app: Application, val repo: HearthStoneRepo) : Vie
     }
 
     fun searchButton() {
-        if (null != _card.value){
+        if (null != _card.value) {
             _navigateToCards.value = true
-        }
-        else{
-            Toast.makeText(app?.applicationContext,"type what you want to search for", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(
+                app?.applicationContext,
+                "type what you want to search for",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

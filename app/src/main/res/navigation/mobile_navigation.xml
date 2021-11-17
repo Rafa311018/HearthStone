@@ -33,9 +33,9 @@
         tools:layout="@layout/fragment_shops" />
     <fragment
         android:id="@+id/cardsFragment"
-        android:name="com.example.hearthstoneapp.ui.cards.CardsFragment"
+        android:name="com.example.hearthstoneapp.ui.search.SearchFragment"
         android:label="fragment_cards"
-        tools:layout="@layout/fragment_cards" >
+        tools:layout="@layout/fragment_search" >
         <action
             android:id="@+id/action_cardsFragment_to_navigation_mainScreen2"
             app:destination="@id/navigation_mainScreen" />

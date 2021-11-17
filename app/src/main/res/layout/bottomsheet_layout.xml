@@ -54,7 +54,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/unnamed_copy_4" />
+            app:srcCompat="@drawable/hs_shop_icon" />
 
         <TextView
             android:id="@+id/address"

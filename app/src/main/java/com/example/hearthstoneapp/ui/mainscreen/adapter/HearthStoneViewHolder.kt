@@ -1,11 +1,9 @@
 package com.example.hearthstoneapp.ui.mainscreen.adapter
 
-import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hearthstoneapp.R
 

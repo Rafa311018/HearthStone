@@ -10,7 +10,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.hearthstoneapp.R
 import com.example.hearthstoneapp.data.database.FavoriteCard
 import com.example.hearthstoneapp.data.network.model.SearchResponse
-import com.google.gson.annotations.SerializedName
 
 @BindingAdapter("cName", "fName")
 fun bindFName(textView: TextView, CName: String?, fName: String?) {

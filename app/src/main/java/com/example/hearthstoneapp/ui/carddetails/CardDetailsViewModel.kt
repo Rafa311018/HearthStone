@@ -1,7 +1,5 @@
 package com.example.hearthstoneapp.ui.carddetails
 
-import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,13 +7,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.hearthstoneapp.data.database.FavoriteCard
 import com.example.hearthstoneapp.data.database.FavoriteDatabaseDao
 import com.example.hearthstoneapp.data.network.model.SearchResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CardDetailsViewModel(
-    val database: FavoriteDatabaseDao,
-    application: Application
+@HiltViewModel
+class CardDetailsViewModel @Inject constructor(
+    private val HSDao: FavoriteDatabaseDao,
 ) : ViewModel(
 ) {
     private val _favorite = MutableLiveData<Boolean>()
@@ -68,19 +68,19 @@ class CardDetailsViewModel(
 
     private suspend fun addFavorite(card: FavoriteCard) {
         withContext(Dispatchers.IO) {
-            database.insert(card)
+            HSDao.insert(card)
         }
     }
 
     private suspend fun deleteFromDatabase() {
         withContext(Dispatchers.IO) {
-            database.delete(idCard)
+            HSDao.delete(idCard)
         }
     }
 
     private suspend fun getFavoriteCardFromDatabase(): FavoriteCard? {
         return withContext(Dispatchers.IO){
-            var card = database.getCard(idCard)
+            var card = HSDao.getCard(idCard)
             card
         }
     }
