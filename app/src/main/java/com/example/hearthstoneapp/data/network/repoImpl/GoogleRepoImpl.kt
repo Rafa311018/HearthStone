@@ -4,7 +4,6 @@ import com.example.hearthstone.data.network.model.networkmodel.ServiceResult
 import com.example.hearthstoneapp.data.network.endpoints.MapApiEndPoint
 import com.example.hearthstoneapp.data.network.model.MapsResponse
 import com.example.hearthstoneapp.data.network.repo.GoogleRepo
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,10 +14,10 @@ class GoogleRepoImpl @Inject constructor(
 ) : GoogleRepo {
 
     override suspend fun fetchPlaces(
-        latLng: String
+        location: String
     ): ServiceResult<MapsResponse?> {
         return withContext(dispatcher.IO) {
-            val dataResponse = retroObjectMap.getShops(location = latLng)
+            val dataResponse = retroObjectMap.fetchShops(location = location)
             if (dataResponse?.isSuccessful!!) {
                 ServiceResult.Succes(dataResponse.body())
             } else {

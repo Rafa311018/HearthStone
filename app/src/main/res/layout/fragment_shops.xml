@@ -24,6 +24,12 @@
             map:layout_constraintStart_toStartOf="parent"
             map:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/blur_view"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
         <FrameLayout
             android:id="@+id/FL"
             android:layout_width="match_parent"
