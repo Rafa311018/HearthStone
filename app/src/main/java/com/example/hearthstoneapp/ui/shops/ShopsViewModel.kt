@@ -1,13 +1,10 @@
 package com.example.hearthstoneapp.ui.shops
 
-import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hearthstone.data.network.model.networkmodel.ServiceResult
-import com.example.hearthstone.data.network.repo.HearthStoneRepo
 import com.example.hearthstoneapp.data.network.model.MapsResponse
 import com.example.hearthstoneapp.data.network.repo.GoogleRepo
 import com.google.android.gms.maps.model.LatLng
@@ -33,11 +30,9 @@ class ShopsViewModel @Inject constructor(
     val latLng: LiveData<LatLng> = _latLng
 
 
-    fun searchPlaces(latLng: LatLng) {
+    fun searchPlaces(location: String) {
         viewModelScope.launch(dispatcher.IO) {
-            when (val response = GoogleRepo.fetchPlaces(
-                (latLng.latitude.toString() + "," + latLng.longitude.toString())
-            )) {
+            when (val response = GoogleRepo.fetchPlaces(location)) {
                 is ServiceResult.Succes -> {
                     _searchPlaces.postValue(response.data)
                     Timber.d(response.toString())

@@ -1,31 +1,29 @@
 package com.example.hearthstoneapp.ui.shops
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Geocoder
 import android.location.Location
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.hearthstoneapp.ui.MainActivity
 import com.example.hearthstoneapp.R
-import com.example.hearthstoneapp.data.network.model.MapsResponse
 import com.example.hearthstoneapp.data.network.model.PlaceResponse
-import com.example.hearthstoneapp.ui.shops.adapter.BitmapHelper
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import com.example.hearthstoneapp.databinding.FragmentShopsBinding
 import com.example.hearthstoneapp.util.secret.API_KEY
 import com.google.android.gms.maps.*
@@ -34,6 +32,10 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback
+import jp.wasabeef.blurry.Blurry
+
 
 @AndroidEntryPoint
 class ShopsFragment : Fragment(), OnMapReadyCallback,
@@ -53,6 +55,33 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var placesClient: PlacesClient
     private lateinit var mapView: MapView
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var lastLocation: Location
+    private lateinit var currentLatLng: LatLng
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+
+            if (isGranted) {
+                Timber.d("Permission granted by the user")
+                enableMyLocation()
+                mMap.snapshot(SnapshotReadyCallback { bitmap ->
+                    binding.blurView.setVisibility(View.VISIBLE)
+                    binding.blurView.setImageBitmap(bitmap)
+                    Blurry.with(context)
+                        .radius(15)
+                        .sampling(2)
+                        .onto(mRootLayout)
+                    mAddressBarLayout.expand()
+                })
+            }
+            else {
+                Timber.d("Permission denied by the user")
+                view?.findNavController()?.navigate(
+                    ShopsFragmentDirections.actionNavigationShopsToNavigationMainScreen()
+                )
+            }
+        }
 
 
     override fun onCreateView(
@@ -93,23 +122,7 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
         viewModel.searchPlaces.observe(viewLifecycleOwner, {
             //bs = bookStore
             it?.results?.forEach{ bs ->
-                val bsLatLng = LatLng(
-                    bs.geometry.location.lat, bs.geometry.location.lng
-                )
-                val snippet = getAddress(bsLatLng)
-
-                val bsMarker = mMap.addMarker(
-                    MarkerOptions()
-                        .position(bsLatLng)
-                        .title(bs.name)
-                        .snippet(snippet)
-                        .icon(BitmapDescriptorFactory.fromBitmap(gotIcon))
-                )
-                if (bsMarker != null) {
-                    Timber.d("New Marker has been made. " +
-                    "${bsMarker.title} is located in ${bsMarker.position}")
-                    bsMarker.tag = false
-                }
+                addMarkers(bs)
             }
         })
 
@@ -118,137 +131,50 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
         )
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
 
         return root
     }
 
-    private fun addMarkers(placeResponse: PlaceResponse, position: Int) {
-        val markerOptions = MarkerOptions()
-            .position(
-                LatLng(
-                    placeResponse.geometry.location.lat,
-                    placeResponse.geometry.location.lng
-                )
-            )
-            .snippet(placeResponse.vicinity)
-            .title(placeResponse.name)
-            .icon(hearthstoneIcon)
+    private fun addMarkers(bs: PlaceResponse) {
+        val bsLatLng = LatLng(
+            bs.geometry.location.lat, bs.geometry.location.lng
+        )
+        val snippet = getAddress(bsLatLng)
 
-        mMap.addMarker(markerOptions)?.tag = position
+        val bsMarker = mMap.addMarker(
+            MarkerOptions()
+                .position(bsLatLng)
+                .title(bs.name)
+                .snippet(snippet)
+                .icon(BitmapDescriptorFactory.fromBitmap(gotIcon))
+        )
+        if (bsMarker != null) {
+            Timber.d(
+                "New Marker has been made. " +
+                        "${bsMarker.title} is located in ${bsMarker.position}"
+            )
+            bsMarker.tag = false
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        mMap.setOnMyLocationButtonClickListener(this)
-        mMap.setOnMyLocationClickListener(this)
-        mMap.setOnMarkerClickListener(this)
-        mMap.setOnMapClickListener(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this.requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    fetchLocation()
-                    mMap.setMyLocationEnabled(true)
-                }
-            }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (ContextCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            Timber.d("Getting permissions")
+        }
+        else{
+            Timber.d("Permissions already granted.")
         }
     }
 
-    private fun fetchLocation() {
-        val task = fusedLocationProviderClient.lastLocation
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            != PackageManager.PERMISSION_GRANTED && ActivityCompat
-                .checkSelfPermission(
-                    requireContext(),
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                101
-            )
-        }
-
-        task.addOnSuccessListener {
-            if (it != null) {
-                viewModel._latLng.value = LatLng(it.latitude, it.longitude)
-                if (moveCamara) {
-                    mMap.moveCamera(
-                        CameraUpdateFactory.newLatLng(
-                            LatLng(
-                                it.latitude,
-                                it.longitude
-                            )
-                        )
-                    )
-                    mMap.animateCamera(
-                        CameraUpdateFactory.zoomTo(15f),
-                        2000,
-                        null
-                    )
-                    moveCamara = false
-                }
-            }
-        }
-    }
 
     companion object {
         val TAG = MainActivity::class.java.simpleName
-    }
-
-    private fun checkForPermissions(permission: String, name: String, requestCode: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this.requireContext(),
-                    permission
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                }
-                shouldShowRequestPermissionRationale(permission) -> showDialog(
-                    permission,
-                    name,
-                    requestCode
-                )
-                else -> ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(permission),
-                    requestCode
-                )
-            }
-        }
-    }
-
-    private fun showDialog(permission: String, name: String, requestCode: Int) {
-        val builder = AlertDialog.Builder(this.context)
-        builder.apply {
-            setMessage("Permission to access your $name is required to show you the nearest shops")
-            setTitle("Permission required")
-            setPositiveButton("Ok") { dialog, which ->
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(permission),
-                    requestCode
-                )
-            }
-        }
-        val dialog = builder.create()
-        dialog.show()
-    }
-
-    private val hearthstoneIcon: BitmapDescriptor by lazy {
-        BitmapHelper.vectorToBitmap(requireContext(), R.drawable.hs_shop_icon)
-    }
-
-    private val hearthstoneIconSelected: BitmapDescriptor by lazy {
-        BitmapHelper.vectorToBitmap(requireContext(), R.drawable.hs_shop_selected_icon)
     }
 
     override fun onMyLocationClick(location: Location) {
@@ -269,7 +195,6 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
                     p0.position.longitude
                 )
             )
-            .icon(hearthstoneIconSelected)
         mMap.addMarker(markerOptions)?.tag
         binding.bottomSheet.name.text = p0.title
         binding.bottomSheet.address.text = p0.snippet
@@ -282,7 +207,6 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
     override fun onMapClick(p0: LatLng) {
         binding.FL.visibility = View.GONE
         mMap.clear()
-        fetchLocation()
     }
 
     private fun getAddress(lat: LatLng): String? {
@@ -291,4 +215,42 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
         return list[0].getAddressLine(0)
     }
 
+    private fun enableMyLocation() {
+        if (isPermissionGranted()) {
+            if (ActivityCompat.checkSelfPermission(
+                    this.requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this.requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Timber.d("Case test")
+            }
+
+            mMap.isMyLocationEnabled = true
+
+            fusedLocationClient.lastLocation.addOnSuccessListener(this.requireActivity()) { location ->
+
+                if (location != null) {
+                    lastLocation = location
+                    currentLatLng = LatLng(location.latitude, location.longitude)
+                    val locationString = "${location.latitude},${location.longitude}"
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
+                    viewModel.searchPlaces(locationString)
+                    Timber.d("Made the map")
+
+                }
+            }
+        }
+        else {
+            Timber.d("Sad, no permissions")
+        }
+    }
+
+    private fun isPermissionGranted() : Boolean {
+        return ContextCompat.checkSelfPermission(
+            this.requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
 }

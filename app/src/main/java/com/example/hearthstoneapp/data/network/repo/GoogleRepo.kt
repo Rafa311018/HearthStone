@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 
 interface GoogleRepo {
     suspend fun fetchPlaces(
-        latLng: String
+        location: String
     ): ServiceResult<MapsResponse?>
 
     companion object {
