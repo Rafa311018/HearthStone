@@ -53,6 +53,9 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var placesClient: PlacesClient
     private lateinit var mapView: MapView
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var lastLocation: Location
+    private lateinit var currentLatLng: LatLng
 
 
     override fun onCreateView(
@@ -140,22 +143,24 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        mMap.setOnMyLocationButtonClickListener(this)
-        mMap.setOnMyLocationClickListener(this)
-        mMap.setOnMarkerClickListener(this)
-        mMap.setOnMapClickListener(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this.requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    fetchLocation()
-                    mMap.setMyLocationEnabled(true)
-                }
-            }
+        if(!isPermissionGranted())
+        {
+            binding.mapsFragmentBackgroundIv.visibility = View.VISIBLE
+            Blurry.with(requireContext())
+                .radius(3)
+                .sampling(8)
+                .async()
+                .capture(binding.mapsFragmentBackgroundIv)
+                .into(binding.mapsFragmentBackgroundIv)
         }
+
+        googleMap.uiSettings.isZoomControlsEnabled = true
+
+        googleMap.setOnMarkerClickListener { marker ->
+            onMarkerClick(marker)
+        }
+
+        enableMyLocation()
     }
 
     private fun fetchLocation() {
@@ -289,6 +294,45 @@ class ShopsFragment : Fragment(), OnMapReadyCallback,
         val geocoder = Geocoder(this.requireContext())
         val list = geocoder.getFromLocation(lat.latitude, lat.longitude,1)
         return list[0].getAddressLine(0)
+    }
+
+    private fun isPermissionGranted() : Boolean {
+        return ContextCompat.checkSelfPermission(
+            this.requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun enableMyLocation() {
+        if (isPermissionGranted()) {
+            if (ActivityCompat.checkSelfPermission(
+                    this.requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this.requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Timber.d("Case test")
+            }
+
+            mMap.isMyLocationEnabled = true
+
+            fusedLocationClient.lastLocation.addOnSuccessListener(this.requireActivity()) { location ->
+
+                if (location != null) {
+                    lastLocation = location
+                    currentLatLng = LatLng(location.latitude, location.longitude)
+                    val locationString = "${location.latitude},${location.longitude}"
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
+                    viewModel.searchPlaces(latLng)
+                    Timber.d("Made the map")
+
+                }
+            }
+        }
+        else {
+            Timber.d("Sad, no permissions")
+        }
     }
 
 }
