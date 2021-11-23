@@ -49,7 +49,7 @@ class MainScreenViewModel @Inject constructor(
                         _showCards.postValue(false)
                     }
                     else -> {
-                        Timber.d("Oh- oh... You've done fucked up...")
+                        Timber.d("Oh- oh... Something is wrong...")
                     }
                 }
             } catch (e: Exception) {

@@ -30,7 +30,11 @@
         android:id="@+id/navigation_shops"
         android:name="com.example.hearthstoneapp.ui.shops.ShopsFragment"
         android:label="@string/title_shops"
-        tools:layout="@layout/fragment_shops" />
+        tools:layout="@layout/fragment_shops" >
+        <action
+            android:id="@+id/action_navigation_shops_to_navigation_mainScreen"
+            app:destination="@id/navigation_mainScreen" />
+    </fragment>
     <fragment
         android:id="@+id/cardsFragment"
         android:name="com.example.hearthstoneapp.ui.search.SearchFragment"

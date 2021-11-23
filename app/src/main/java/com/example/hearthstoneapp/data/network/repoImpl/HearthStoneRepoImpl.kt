@@ -1,5 +1,6 @@
 package com.example.hearthstone.data.network.repoImpl
 
+import android.util.Log
 import com.example.hearthstone.data.network.endpoints.HearthStoneApiEndPoints
 import com.example.hearthstone.data.network.model.HearthStoneResponse
 import com.example.hearthstone.data.network.model.networkmodel.ServiceResult
@@ -18,15 +19,11 @@ class HearthStoneRepoImpl @Inject constructor(
     private val retroObject: HearthStoneApiEndPoints
 ) : HearthStoneRepo {
 
-    val retroObjectMap = RetrofitFactory.retrofitProvider(
-        MapApiEndPoint::class.java,
-        "https://maps.googleapis.com/"
-    )
-
     override suspend fun fetchHearthStoneClasses(
     ): ServiceResult<HearthStoneResponse?> {
         return withContext(dispatcher.IO) {
             val dataResponse = retroObject.getInfo()
+            Log.d("Yoshi", "$dataResponse")
             if (dataResponse.isSuccessful) {
                 ServiceResult.Succes(dataResponse.body())
             } else {

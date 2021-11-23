@@ -42,7 +42,6 @@
             android:layout_width="87dp"
             android:layout_height="87dp"
             android:layout_marginStart="16dp"
-            android:onClick="@{() -> cardListener.onClickCard(card)}"
             android:src="@drawable/loading_animation"
             app:cImgUrl="@{card.img}"
             app:card="@{card}"
@@ -57,7 +56,6 @@
             android:layout_width="87dp"
             android:layout_height="87dp"
             android:layout_marginStart="16dp"
-            android:onClick="@{() -> favoriteListener.onClickCard(favorite)}"
             android:src="@drawable/loading_animation"
             android:visibility="gone"
             app:cImgUrl="@{card.img}"
@@ -134,8 +132,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/basic_heart_outline"
-            android:onClick="@{() -> cardListener.onClickCardF(card)}"/>
+            app:srcCompat="@drawable/basic_heart_outline" />
 
         <ImageView
             android:id="@+id/likeIconF"
@@ -146,8 +143,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/basic_heart_outline"
-            android:onClick="@{() -> favoriteListener.onClickCardF(favorite)}"/>
+            app:srcCompat="@drawable/basic_heart_outline" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

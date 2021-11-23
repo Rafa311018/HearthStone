@@ -15,10 +15,10 @@ class GoogleRepoImpl @Inject constructor(
 ) : GoogleRepo {
 
     override suspend fun fetchPlaces(
-        latLng: String
+        location: String
     ): ServiceResult<MapsResponse?> {
         return withContext(dispatcher.IO) {
-            val dataResponse = retroObjectMap.getShops(location = latLng)
+            val dataResponse = retroObjectMap.getShops(location = location)
             if (dataResponse?.isSuccessful!!) {
                 ServiceResult.Succes(dataResponse.body())
             } else {

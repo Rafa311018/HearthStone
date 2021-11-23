@@ -9,11 +9,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hearthstoneapp.R
 import com.example.hearthstoneapp.data.database.FavoriteCard
+import com.example.hearthstoneapp.data.network.model.SearchResponse
 import com.example.hearthstoneapp.databinding.ListCardsBinding
 
 class FavoritesAdapter(
     private val clickListener: FavoritesListener
-) : ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallBack()) {
+) : ListAdapter<FavoriteCard, RecyclerView.ViewHolder>(DiffCallBack()) {
     private var hearthstoneCards: List<FavoriteCard?>? = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -23,7 +24,7 @@ class FavoritesAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder -> {
-                hearthstoneCards?.get(position)?.let { holder.bind(it, clickListener) }
+                hearthstoneCards?.get(position)?.let { holder.bind(it, clickListener, position) }
             }
         }
     }
@@ -39,9 +40,14 @@ class FavoritesAdapter(
 
     class ViewHolder private constructor(val binding: ListCardsBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: FavoriteCard, clickListener: FavoritesListener) {
+        fun bind(item: FavoriteCard, clickListener: FavoritesListener, position: Int) {
             binding.favorite = item
-            binding.favoriteListener = clickListener
+            binding.imageViewFavoriteCard.setOnClickListener {
+                clickListener.onClickCard(item, "details", position)
+            }
+            binding.likeIconF.setOnClickListener {
+                clickListener.onClickCardF(item, "favorite", position)
+            }
             binding.likeIconF.setImageResource(R.drawable.basic_heart_fill)
             binding.likeIconF.visibility = View.VISIBLE
             binding.likeIcon.visibility = View.GONE
@@ -58,25 +64,23 @@ class FavoritesAdapter(
     }
 }
 
-class DiffCallBack : DiffUtil.ItemCallback<DataItem>() {
-    override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
-        return oldItem.id == newItem.id
+class DiffCallBack : DiffUtil.ItemCallback<FavoriteCard>() {
+    override fun areItemsTheSame(oldItem: FavoriteCard, newItem: FavoriteCard): Boolean {
+        return oldItem.cardId == newItem.cardId
     }
 
-    override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
+    override fun areContentsTheSame(oldItem: FavoriteCard, newItem: FavoriteCard): Boolean {
         return oldItem == newItem
     }
 }
 
-sealed class DataItem {
-    data class CardItem(val card: FavoriteCard) : DataItem() {
-        override val id = card.cardId
-    }
+class FavoritesListener(
+    val clickListener:
+        (card: FavoriteCard, click: String, position: Int) -> Unit
+) {
+    fun onClickCard(card: FavoriteCard, identifier: String, position: Int) =
+        clickListener(card, identifier, position)
 
-    abstract val id: String
-}
-
-class FavoritesListener(val clickListener: (card: FavoriteCard, click: String) -> Unit) {
-    fun onClickCard(card: FavoriteCard) = clickListener(card, "details")
-    fun onClickCardF(card: FavoriteCard) = clickListener(card, "favorite")
+    fun onClickCardF(card: FavoriteCard, identifier: String, position: Int) =
+        clickListener(card, identifier, position)
 }

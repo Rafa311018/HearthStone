@@ -41,7 +41,7 @@ class MainScreen : Fragment() {
         binding.viewModel = viewModel
 
         binding.mainScreenRV.visibility = View.GONE
-        binding.loadingIV.visibility = View.VISIBLE
+        binding.imgLoading.visibility = View.VISIBLE
 
         viewModel.navigateToCards.observe(viewLifecycleOwner, {
             if (it) {
@@ -81,7 +81,7 @@ class MainScreen : Fragment() {
         viewModel.hearthStoneClasses.observe(viewLifecycleOwner, { responseList ->
             adapter.setData(responseList)
             binding.mainScreenRV.visibility = View.VISIBLE
-            binding.loadingIV.visibility = View.GONE
+            binding.imgLoading.visibility = View.GONE
         })
     }
 }

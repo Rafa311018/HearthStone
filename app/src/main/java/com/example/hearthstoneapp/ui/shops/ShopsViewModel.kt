@@ -33,10 +33,10 @@ class ShopsViewModel @Inject constructor(
     val latLng: LiveData<LatLng> = _latLng
 
 
-    fun searchPlaces(latLng: LatLng) {
+    fun searchPlaces(location: String) {
         viewModelScope.launch(dispatcher.IO) {
             when (val response = GoogleRepo.fetchPlaces(
-                (latLng.latitude.toString() + "," + latLng.longitude.toString())
+                location
             )) {
                 is ServiceResult.Succes -> {
                     _searchPlaces.postValue(response.data)
@@ -44,12 +44,12 @@ class ShopsViewModel @Inject constructor(
                 }
                 is ServiceResult.Error -> {
                     Timber.d(
-                        "Error was found when calling Heartstone classes :: "
+                        "Error was found when calling maps :: "
                                 + response.exception
                     )
                 }
                 else -> {
-                    Timber.d("Oh- oh... You've done fucked up...")
+                    Timber.d("Oh- oh... Something is wrong...")
                 }
             }
 

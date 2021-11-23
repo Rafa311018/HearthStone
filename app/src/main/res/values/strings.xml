@@ -15,4 +15,5 @@
     <string name="type">Type: </string>
     <string name="your_favorites">Your Favorites</string>
     <string name="no_favorites">You have no favorites</string>
+    <string name="maps_dialog_distance">%s mi</string>
 </resources>

@@ -29,7 +29,7 @@ class FavoritesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var adapter = FavoritesAdapter(FavoritesListener { favorite, click ->
+        var adapter = FavoritesAdapter(FavoritesListener { favorite, click, position ->
             if (click == "details") {
                 val card = viewModel.updateCard(favorite)
                 this.findNavController().navigate(

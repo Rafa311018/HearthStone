@@ -19,13 +19,14 @@ class SearchFragment : Fragment() {
     val viewModel: SearchViewModel by viewModels()
 
     private lateinit var binding: FragmentSearchBinding
+    private var positionC: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
-        var adapter = CardsAdapter(CardListener { card, click ->
+        var adapter = CardsAdapter(CardListener { card, click, position ->
             if (click == "details") {
                 this.findNavController().navigate(
                     SearchFragmentDirections.actionCardsFragmentToCardDetailsFragment(
@@ -34,6 +35,7 @@ class SearchFragment : Fragment() {
                 )
             } else {
                 viewModel.clickFavorite(card)
+                positionC = position
             }
         })
 
@@ -79,6 +81,12 @@ class SearchFragment : Fragment() {
             if (it) {
                 callApi()
                 viewModel.doneUpdate()
+            }
+        })
+        viewModel.updateItem.observe(viewLifecycleOwner, {
+            if (it){
+                adapter.notifyItemChanged(positionC)
+                viewModel.doneUpdateItem()
             }
         })
 

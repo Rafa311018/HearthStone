@@ -46,6 +46,9 @@ class SearchViewModel @Inject constructor(
     private val _updateData = MutableLiveData<Boolean>()
     val updateData: LiveData<Boolean> = _updateData
 
+    private val _updateItem = MutableLiveData<Boolean>()
+    val updateItem: LiveData<Boolean> = _updateItem
+
     private val _isFavorite = MutableLiveData<FavoriteCard>()
     val isFavorite: LiveData<FavoriteCard> = _isFavorite
 
@@ -153,18 +156,22 @@ class SearchViewModel @Inject constructor(
     fun addFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
             HSDao.insert(insertCard)
-            _updateData.postValue(true)
         }
+        _updateItem.value = true
     }
 
     fun deleteFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
             HSDao.delete(insertCard.cardId)
-            _updateData.postValue(true)
         }
+        _updateItem.value = true
     }
 
     fun doneUpdate() {
+        _updateData.value = false
+    }
+
+    fun doneUpdateItem() {
         _updateData.value = false
     }
 }
