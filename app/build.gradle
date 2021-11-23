@@ -106,5 +106,5 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:2.38.1"
 
     //Blurry
-    implementation 'jp.wasabeef:blurry:2.0.3'
+    implementation 'jp.wasabeef:blurry:4.0.0'
 }
