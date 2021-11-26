@@ -34,8 +34,8 @@ class SearchFragment : Fragment() {
                     )
                 )
             } else {
-                viewModel.clickFavorite(card)
                 positionC = position
+                viewModel.clickFavorite(card)
             }
         })
 
@@ -84,8 +84,9 @@ class SearchFragment : Fragment() {
             }
         })
         viewModel.updateItem.observe(viewLifecycleOwner, {
-            if (it){
-                adapter.notifyItemChanged(positionC)
+            if (it != null){
+                viewModel.getFavorites()
+                adapter.updateItem(positionC, it)
                 viewModel.doneUpdateItem()
             }
         })

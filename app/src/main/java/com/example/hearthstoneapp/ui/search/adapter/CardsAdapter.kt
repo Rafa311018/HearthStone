@@ -39,6 +39,11 @@ class CardsAdapter(private val clickListener: CardListener) :
         notifyDataSetChanged()
     }
 
+    fun updateItem(position: Int,favoriteList: List<String>? ){
+        this.favoriteList = favoriteList
+        notifyItemChanged(position)
+    }
+
     class ViewHolder(private val binding: ListCardsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(

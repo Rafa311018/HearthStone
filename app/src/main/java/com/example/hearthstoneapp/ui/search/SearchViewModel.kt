@@ -15,6 +15,7 @@ import com.example.hearthstoneapp.data.network.model.SearchResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -46,8 +47,8 @@ class SearchViewModel @Inject constructor(
     private val _updateData = MutableLiveData<Boolean>()
     val updateData: LiveData<Boolean> = _updateData
 
-    private val _updateItem = MutableLiveData<Boolean>()
-    val updateItem: LiveData<Boolean> = _updateItem
+    val _updateItem = MutableLiveData<List<String>?>()
+    val updateItem: LiveData<List<String>?> = _updateItem
 
     private val _isFavorite = MutableLiveData<FavoriteCard>()
     val isFavorite: LiveData<FavoriteCard> = _isFavorite
@@ -112,9 +113,15 @@ class SearchViewModel @Inject constructor(
 
     }
 
-    private fun getFavorites() {
+    fun getFavorites() {
         viewModelScope.launch(Dispatchers.IO) {
             _favoriteList.postValue(HSDao.getAllIdCards())
+        }
+    }
+
+    private suspend fun updateFavorites(): List<String> {
+        return withContext(Dispatchers.IO){
+             HSDao.getAllIdCards()!!
         }
     }
 
@@ -140,15 +147,15 @@ class SearchViewModel @Inject constructor(
     }
 
     fun clickFavorite(card: SearchResponse) {
-        insertCard.cardId = card.cardId
-        insertCard.cardSet = card.cardSet
-        insertCard.type = card.type
-        insertCard.rarity = card.rarity
-        insertCard.playerClass = card.playerClass
-        insertCard.name = card.name.toString()
-        insertCard.img = card.img
-        insertCard.effect = card.effect
         viewModelScope.launch(Dispatchers.IO) {
+            insertCard.cardId = card.cardId
+            insertCard.cardSet = card.cardSet
+            insertCard.type = card.type
+            insertCard.rarity = card.rarity
+            insertCard.playerClass = card.playerClass
+            insertCard.name = card.name.toString()
+            insertCard.img = card.img
+            insertCard.effect = card.effect
             _isFavorite.postValue(HSDao.getCard(insertCard.cardId))
         }
     }
@@ -156,15 +163,15 @@ class SearchViewModel @Inject constructor(
     fun addFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
             HSDao.insert(insertCard)
+            _updateItem.postValue(updateFavorites())
         }
-        _updateItem.value = true
     }
 
     fun deleteFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
             HSDao.delete(insertCard.cardId)
+            _updateItem.postValue(updateFavorites())
         }
-        _updateItem.value = true
     }
 
     fun doneUpdate() {
@@ -172,6 +179,6 @@ class SearchViewModel @Inject constructor(
     }
 
     fun doneUpdateItem() {
-        _updateData.value = false
+        _updateItem.value = null
     }
 }
